@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Version=${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
+Name=Zenzizenzizenzic
+Comment=${PROJECT_DESCRIPTION}
+Path=/usr/bin/zenzizenzizenzic_ncurses
+Exec=zenzizenzizenzic_ncurses
+Terminal=true
+Categories=Games

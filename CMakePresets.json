@@ -1,0 +1,64 @@
+{
+    "version": 4,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 23,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "dev",
+            "displayName": "Development Config",
+            "description": "Compile with strict debug and formatting flags enabled. Intended for local testing.",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX":"/usr/local/bin",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_C_FLAGS": "-finput-charset=UTF-8 -Wall -Werror -Wextra -Wshadow -Wunused-parameter -fno-common -pedantic -lm -g -pg -rdynamic",
+                "CMAKE_C_COMPILER": "gcc"
+            }
+        },
+        {
+            "name": "dev-mingw",
+            "displayName": "Debug Config [Mingw Toolchain]",
+            "description": "Cross-compile with debug flags enabled using a mingw toolchain.",
+            "binaryDir": "${sourceDir}/build",
+            "toolchainFile": "${sourceDir}/toolchain/win64.cmake",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX":"/usr/local/bin",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_C_FLAGS": "-finput-charset=UTF-8 -Wall -Werror -Wextra -Wshadow -Wunused-parameter -fno-common -pedantic -lm -g",
+                "CMAKE_C_COMPILER": "gcc"
+            }
+        },
+        {
+            "name": "release",
+            "displayName": "Release Config",
+            "description": "Compile with the highest level of optimization. Intended for releases.",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX":"/usr/local/bin",
+                "CMAKE_BUILD_TYPE":"Release",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "OFF",
+                "CMAKE_C_FLAGS": "-finput-charset=UTF-8 -s -O3",
+                "CMAKE_C_COMPILER": "gcc"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "dev",
+            "configurePreset": "dev"
+        },
+        {
+            "name": "dev-mingw",
+            "configurePreset": "dev-mingw"
+        },
+        {
+            "name": "release",
+            "configurePreset": "release"
+        }
+    ]
+}

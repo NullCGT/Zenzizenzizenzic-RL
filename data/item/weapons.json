@@ -1,0 +1,32 @@
+{
+    "knife": {
+        "name": "combat knife",
+        "appearance": "knife",
+        "chr": "/",
+        "color": "white",
+        "hp": 4,
+        "speed": 50,
+        "attacks": [
+            { "damage": 5, "kb": 0, "accuracy": 70, "types": ["Mid"] }
+        ],
+        "item": {
+            "pref_slot": "weapon"
+        },
+        "description": "A combat knife. Standard issue for somebody."
+    },
+    "pipe": {
+        "name": "lead pipe",
+        "appearance": "pipe",
+        "chr": "/",
+        "color": "cyan",
+        "hp": 10,
+        "speed": 100,
+        "attacks": [
+            { "damage": 12, "kb": 1, "accuracy": 80, "types": ["High"] }
+        ],
+        "item": {
+            "pref_slot": "weapon"
+        },
+        "description": "A trusty pipe. Polaris really shouldn't leave these lying around."
+    }
+}

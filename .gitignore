@@ -1,0 +1,21 @@
+# Binaries
+zenzizenzizenzic
+
+# Generated files
+obj/
+*.o
+/makefile
+version.h
+*.desktop
+gmon.out
+prof_output
+
+# CMake artifacts
+build/
+
+# Settings
+.vscode/
+
+# Application artifacts
+dumplog.txt
+*.sav

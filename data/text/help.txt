@@ -1,0 +1,64 @@
+#################### ZENZIZENZIZENZIC #####################
+###########################################################
+
+#################### THE STORY SO FAR #####################
+The Roaring Lion Games: An illegal martial arts tournament
+where the strongest fighters in the world compete for one
+prize and one prize only: The glory of demonstrating the
+skills they have spent their entire lives honing.
+
+Some of them are friends.
+Some of them are bitter enemies.
+Some of them are both.
+
+When they enter the ring, however, they are only one thing:
+Siblings, bonded by a shared passion for the thrill of
+the fight.
+
+Every year, fighters meet in a secret location and battle
+in no-holds-barred matches to determine who is capable of
+taking home the title of Roaring Lion.
+
+This year, however, is different.
+
+Former champion and trillionaire Polaris Altair has bought the city where
+the 64th annual Roaring Lion Games was set to take place and
+has imposed martial law. He plans to use his vast wealth to
+bring the world to its knees and force it to accept his
+ideal: Only the Strong Survive.
+
+The combatants of the Roaring Lion Games must now set aside
+both rivalry and friendship in order to band together and
+put a stop to the fascist former fighter forever.
+
+Do you have what it takes to lead them?
+
+######################## ACTIONS ##########################
+
+                |= BASIC KEYBINDS =|
+
+Key     Function        Explanation
+-----------------------------------------------------------
+ >      Descend         Crouch / Ascend stairs.
+ <      Ascend          Stand up / Ascend stairs.
+ ,      Get             Pick up an item.
+ ;      Look            Look at a character on the screen.
+ ?      Help            View this manual.
+ S      Save            Save and quit.
+ Q      Quit            Abandon the current game.
+ i      Inventory       View the inventory.
+ Tab    Menu Mode       Change the menu mode.
+ 1-8    Hotkeys         Switch between attacks.
+
+                |= ADVANCED KEYBINDS =|
+
+Key     Function        Explanation
+-----------------------------------------------------------
+ :      Look Down       Describe the current tile.
+ x      Autoexplore     Automatically explore the area.
+ o      Open            Open a door or container.
+ c      Close           Close a door or container.
+ #      Direct Input    Specify an action directly.
+
+###########################################################
+#################### ZENZIZENZIZENZIC #####################
