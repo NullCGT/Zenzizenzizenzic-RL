@@ -57,14 +57,14 @@ int climb(struct actor *, int);
    number of function calls as low as possible.*/
 struct action actions[ACTION_COUNT] = {
     VOID_ACT("none",        A_NONE,        -1,  -1,  do_nothing, 0, 0),
-    MOV_ACT("West",         A_WEST,       'h',  -1),
-    MOV_ACT("East",         A_EAST,       'l',  -1),
-    MOV_ACT("North",        A_NORTH,      'k',  -1),
-    MOV_ACT("South",        A_SOUTH,      'j',  -1),
-    MOV_ACT("Northwest",    A_NORTHWEST,  'y',  -1),
-    MOV_ACT("Northeast",    A_NORTHEAST,  'u',  -1),
-    MOV_ACT("Southwest",    A_SOUTHWEST,  'b',  -1),
-    MOV_ACT("Southeast",    A_SOUTHEAST,  'n',  -1),
+    MOV_ACT("West",         A_WEST,       'h',  'H'),
+    MOV_ACT("East",         A_EAST,       'l',  'L'),
+    MOV_ACT("North",        A_NORTH,      'k',  'K'),
+    MOV_ACT("South",        A_SOUTH,      'j',  'J'),
+    MOV_ACT("Northwest",    A_NORTHWEST,  'y',  'Y'),
+    MOV_ACT("Northeast",    A_NORTHEAST,  'u',  'U'),
+    MOV_ACT("Southwest",    A_SOUTHWEST,  'b',  'B'),
+    MOV_ACT("Southeast",    A_SOUTHEAST,  'n',  'N'),
     MOV_ACT("Rest",         A_REST,       '.',  'z'),
     DIR_ACT("Open",         A_OPEN,       'o',  -1,  open_door, 0, 0),
     DIR_ACT("Close",        A_CLOSE,      'c',  -1,  close_door, 0, 0),
@@ -456,6 +456,9 @@ struct action *get_action(void) {
     for (i = 0; i < ACTION_COUNT; i++) {
         if (actions[i].code == keycode
             || actions[i].alt_code == keycode) {
+                if (keycode == actions[i].alt_code && is_movement(i)) {
+                    f.mode_run = 1;
+                }
                 return &actions[i];
             }
     }
