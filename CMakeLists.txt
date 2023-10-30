@@ -26,7 +26,7 @@ set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems
   CACHE STRING "Vcpkg toolchain file")
 
 # Project definition
-project(${PROJECT_NAME} VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}) 
+project(${PROJECT_NAME} VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH} LANGUAGES C) 
 ##########################Compile##########################
 # Find required packages
 set(CURSES_NEED_WIDE TRUE)
