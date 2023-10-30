@@ -140,7 +140,7 @@ signed char menu_do_choice(struct menu *menu, int can_quit) {
                 continue;
             else
                 menu->selected = y;
-            if (event.bstate & BUTTON1_CLICKED) {
+            if (event.bstate & BUTTON1_PRESSED) {
                 (void) x;
                 for (int i = 0; i < menu->selected; i++) {
                     cur_item = cur_item->next;

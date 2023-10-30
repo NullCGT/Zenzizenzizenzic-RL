@@ -175,6 +175,7 @@ void setup_screen(void) {
     raw();
     keypad(stdscr, 1);
     mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
+    mouseinterval(0);
     refresh();
 }
 
@@ -775,7 +776,7 @@ int handle_mouse(void) {
     gy = y - g.cy - term.mapwin_y;
     
     #if 0
-    if (event.bstate & BUTTON1_CLICKED) {
+    if (event.bstate & BUTTON1_PRESSED) {
         if (y <= term.msg_h - 1 && x <= term.msg_w) {
             return A_FULLSCREEN;
         }
@@ -788,7 +789,8 @@ int handle_mouse(void) {
     }
 
     /* Left click to travel. */
-    if ((event.bstate & BUTTON1_CLICKED)
+    if ((event.bstate & BUTTON1_PRESSED)
+        && !f.mode_look
         && in_bounds(gx, gy)
         && !is_blocked(gx, gy)
         && is_explored(gx, gy)) {
@@ -799,7 +801,7 @@ int handle_mouse(void) {
         return 0;
     }
     /* Right click to examine. */
-    if (event.bstate & BUTTON3_CLICKED) {
+    if (event.bstate & BUTTON3_PRESSED) {
         look_at(gx, gy);
     }
 
