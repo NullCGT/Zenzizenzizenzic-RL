@@ -106,7 +106,5 @@ Zenzizenzizenzic was influenced by numerous games, the most prominent of which a
 
 * [The Slimy Lichmummy](http://www.happyponyland.net/the-slimy-lichmummy)
 
-* [Shin Megami Tensei](https://en.wikipedia.org/wiki/Megami_Tensei)
-
 * [Sil-Q](https://github.com/sil-quirk/sil-q)
 
