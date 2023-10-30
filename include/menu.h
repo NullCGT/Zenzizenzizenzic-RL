@@ -1,7 +1,7 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include <curses.h>
+#include "windows.h"
 
 struct menu_item {
     char text[64];
@@ -12,7 +12,7 @@ struct menu_item {
 struct menu {
     const char *title;
     struct menu_item *items;
-    WINDOW *win;
+    struct zz_win win;
     unsigned char max;
     int selected;
 };

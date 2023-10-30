@@ -30,9 +30,9 @@ struct menu *menu_new(const char *title, int x, int y, int w, int h) {
     new_menu->selected = 0;
     new_menu->items = NULL;
     new_menu->win = create_win(h, w, y, x);
-    werase(new_menu->win);
     f.mode_map = 0;
-    wrefresh(new_menu->win);
+    update_panels();
+    doupdate();
     return new_menu;
 }
 
@@ -69,33 +69,35 @@ void menu_add_item(struct menu *menu, unsigned char index, const char *text) {
  */
 void display_menu(struct menu *menu) {
     struct menu_item *cur = menu->items;
+    WINDOW *menu_win_p = menu->win.win;
     char itembuf[128];
     int index = 0;
 
-    werase(menu->win);
-    wcolor_on(menu->win, YELLOW);
-    box(menu->win, 0, 0);
+    werase(menu_win_p);
+    wcolor_on(menu_win_p, YELLOW);
+    box(menu_win_p, 0, 0);
     if (menu->title) {
-        wattron(menu->win, A_STANDOUT);
-        mvwprintw(menu->win, 0, 1, menu->title);
-        wattroff(menu->win, A_STANDOUT);
+        wattron(menu_win_p, A_STANDOUT);
+        mvwprintw(menu_win_p, 0, 1, menu->title);
+        wattroff(menu_win_p, A_STANDOUT);
     }
-    wcolor_off(menu->win, YELLOW);
+    wcolor_off(menu_win_p, YELLOW);
     
     while (cur != NULL) {
         memset(itembuf, 0, 128);
         snprintf(itembuf, sizeof(itembuf), " %c) %s", cur->index, cur->text);
         if (index == menu->selected) {
-            wattron(menu->win, A_BOLD);
-            wattron(menu->win, A_UNDERLINE);
+            wattron(menu_win_p, A_BOLD);
+            wattron(menu_win_p, A_UNDERLINE);
         }
-        mvwprintw(menu->win, index + 2, 1, itembuf);
-        wattroff(menu->win, A_BOLD);
-        wattroff(menu->win, A_UNDERLINE);
+        mvwprintw(menu_win_p, index + 2, 1, itembuf);
+        wattroff(menu_win_p, A_BOLD);
+        wattroff(menu_win_p, A_UNDERLINE);
         cur = cur->next;
         index++;
     }
-    wrefresh(menu->win);
+    update_panels();
+    doupdate();
 }
 
 /**
@@ -114,7 +116,7 @@ signed char menu_do_choice(struct menu *menu, int can_quit) {
 
     while (1) {
         display_menu(menu);
-        wrefresh(menu->win);
+        doupdate();
         int input = getch();
 
         if (input == 27 && can_quit) {
@@ -133,7 +135,7 @@ signed char menu_do_choice(struct menu *menu, int can_quit) {
         } else if (input == KEY_MOUSE) {
             if (getmouse(&event) != OK)
                 continue;
-            getbegyx(menu->win, y, x);
+            getbegyx(menu->win.win, y, x);
             x = event.x - x;
             y = event.y - y - 2;
             if (y < 0 || y >= menu->max)
@@ -167,7 +169,6 @@ void menu_destroy(struct menu *menu) {
     }
     cleanup_win(menu->win);
     free(menu);
-    f.update_map = 1;
     f.update_msg = 1;
     f.mode_map = 1;
 }

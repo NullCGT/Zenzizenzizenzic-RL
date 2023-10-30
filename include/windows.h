@@ -2,14 +2,20 @@
 #define WINDOWS_H
 
 #include <curses.h>
+#include <panel.h>
+
+struct zz_win {
+    WINDOW *win;
+    PANEL *panel;
+};
 
 /* Function Prototypes */
 void wcolor_on(WINDOW *, unsigned char);
 void wcolor_off(WINDOW *, unsigned char);
 void title_screen(void);
 void setup_gui(void);
-WINDOW* create_win(int, int, int, int);
-void cleanup_win(WINDOW *);
+struct zz_win create_win(int, int, int, int);
+void cleanup_win(struct zz_win);
 void setup_screen(void);
 void cleanup_screen(void);
 void text_entry(const char *, char *, int);

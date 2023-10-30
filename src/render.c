@@ -52,6 +52,8 @@ void render_all(void) {
     if (f.update_msg) {
         draw_msg_window(0);
     }
+    update_panels();
+    doupdate();
 }
 
 /**

@@ -38,7 +38,7 @@ file(GLOB SRCS "src/*.c")
 add_executable(${PROJECT_NAME} ${SRCS} windows/curses/windows.c windows/curses/menu.c)
 #TODO: Inclusion directories in this way is also considered bad practice.
 target_include_directories(${PROJECT_NAME} PUBLIC include ${CJSON_INCLUDE_DIR} ${CURSES_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PUBLIC ${CJSON_LIBRARIES} ${CURSES_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${CJSON_LIBRARIES} ${CURSES_LIBRARIES} -lpanel)
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 # Copy data files

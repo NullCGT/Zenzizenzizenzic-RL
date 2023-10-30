@@ -197,7 +197,7 @@ struct actor *win_pick_invent(void) {
         return NULL;
     }
 
-    selector = menu_new("Inventory", 0, 0, term.mapwin_w, term.mapwin_h);
+    selector = menu_new("Inventory", term.mapwin_x, term.mapwin_y, term.mapwin_w, term.mapwin_h);
     while (cur != NULL) {
         menu_add_item(selector, cur->item->letter, actor_name(cur, NAME_EQ | NAME_EX));
         cur = cur->next;
@@ -233,7 +233,7 @@ int win_use_item(struct actor *item) {
     int selected = -1;
     int equipped = is_equipped(item);
 
-    selector = menu_new(actor_name(item, NAME_A | NAME_CAP), 0, 0, term.mapwin_w, term.mapwin_h);
+    selector = menu_new(actor_name(item, NAME_A | NAME_CAP), term.mapwin_x, term.mapwin_y, term.mapwin_w, term.mapwin_h);
     menu_add_item(selector, 'd', "drop");
     menu_add_item(selector, 'w', is_weapon(item) ? "wield" : "wear");
     if (equipped)
@@ -329,9 +329,9 @@ int equip_item(struct actor *actor, struct actor *item, int inslot) {
     }
     if (!(slot_types[inslot].field & item->item->poss_slot)) {
         /* TODO: Vary this message based on intelligence score. */
-        logm("Equipping %s on the %s%s? How silly.",
+        logm("Equipping %s on the %s? %s",
              actor_name(item, NAME_THE), slot_types[inslot].slot_name,
-             in_danger(actor) ? "!" : ".");
+             in_danger(actor) ? "That's ridiculous!" : "Be serious.");
         return 0;
     }
 

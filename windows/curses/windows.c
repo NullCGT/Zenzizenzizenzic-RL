@@ -48,12 +48,12 @@ struct curse_color {
 
 #define CHANGE_COLORS 0
 
-WINDOW *map_win;
+struct zz_win map_win;
 WINDOW *msg_win;
-WINDOW *bars_win;
-WINDOW* msgbox_win;
-WINDOW *sb_win_left;
-WINDOW *sb_win_right;
+struct zz_win bars_win;
+struct zz_win msgbox_win;
+struct zz_win sb_win_left;
+struct zz_win sb_win_right;
 
 /* SCREEN FUNCTIONS */
 
@@ -71,13 +71,19 @@ void wcolor_off(WINDOW *win, unsigned char color) {
 
 void title_screen(void) {
     WINDOW *background;
+    struct zz_win background_container;
     struct menu *selector;
     char buf[64];
     int selected = -1;
 
-    background = newwin(term.h, term.w, 0, 0);
+    background_container = create_win(term.h, term.w, 0, 0);
+    background = background_container.win;
+    for (int x = 0; x < term.w; x++) {
+        for (int y = 0; y < term.h; y++) {
+            mvwaddch(background, y, x, 'z');
+        }
+    }
     box(background, 0, 0);
-    wrefresh(background);
 
     snprintf(buf, sizeof(buf), "Zenzizenzizenzic v%d.%d.%d-%s", 
              VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, RELEASE_TYPE);
@@ -94,7 +100,7 @@ void title_screen(void) {
         switch (selected) {
             case 'p':
                 menu_destroy(selector);
-                cleanup_win(background);
+                cleanup_win(background_container);
                 return;
             case 'd':
                 display_file_text("dumplog.txt");
@@ -107,7 +113,7 @@ void title_screen(void) {
                 break;
             case 'q':
                 menu_destroy(selector);
-                cleanup_win(background);
+                cleanup_win(background_container);
                 cleanup_screen();
                 exit(0);
         }
@@ -120,15 +126,18 @@ void title_screen(void) {
  */
 void setup_gui(void) {
     map_win = create_win(term.mapwin_h, term.mapwin_w, term.mapwin_y, term.mapwin_x);
-    msg_win = newpad(term.h, term.msg_w);
     bars_win = create_win(4, term.msg_w, 0, 0);
     msgbox_win = create_win(term.msg_h, term.msg_w, term.msg_y, 0);
+    msg_win = newpad(term.h, term.msg_w);
+    new_panel(msg_win);
     sb_win_left = create_win(term.sb_h, term.mapwin_x, term.mapwin_y, 0);
     sb_win_right = create_win(term.sb_h, term.sb_w, term.mapwin_y, term.sb_x);
     f.update_map = 1;
     draw_msg_window(0);
     draw_lifebars();
-    wrefresh(map_win);
+    wrefresh(map_win.win);
+    update_panels();
+    doupdate();
 }
 
 /**
@@ -225,12 +234,18 @@ void cleanup_screen(void) {
  * @param w width.
  * @param y y coordinate.
  * @param x x coordinate.
- * @return WINDOW* Pointer to the window struct.
+ * @return The created window and panel struct.
  */
-WINDOW* create_win(int h, int w, int y, int x) {
-    WINDOW* new_win;
-    new_win = newwin(h, w, y, x);
-    return new_win;
+struct zz_win create_win(int h, int w, int y, int x) {
+    WINDOW* win;
+    PANEL* panel;
+    struct zz_win ret;
+
+    win = newwin(h, w, y, x);
+    panel = new_panel(win);
+    ret.win = win;
+    ret.panel = panel;
+    return ret;
 }
 
 /**
@@ -238,10 +253,12 @@ WINDOW* create_win(int h, int w, int y, int x) {
  * 
  * @param win Window to be cleaned up.
  */
-void cleanup_win(WINDOW *win) {
-    werase(win);
-    wrefresh(win);
-    delwin(win);
+void cleanup_win(struct zz_win win) {
+    werase(win.win);
+    del_panel(win.panel);
+    delwin(win.win);
+    update_panels();
+    doupdate();
     return;
 }
 
@@ -252,21 +269,26 @@ void cleanup_win(WINDOW *win) {
  */
 void popup_warning(const char *text) {
     WINDOW *new_win;
+    PANEL *panel;
     int keycode;
 
-    new_win = newwin(term.h, term.w, 0, 0);
+    new_win = newwin(3, strlen(text) + 2, 1, 1);
+    panel = new_panel(new_win);
+    wcolor_on(new_win, RED);
     box(new_win, 0, 0);
+    wcolor_off(new_win, RED);
     mvwprintw(new_win, 1, 1, text);
-    wrefresh(new_win);
+    update_panels();
+    doupdate();
 
     while ((keycode = handle_keys())) {
-        if (keycode == 27 || keycode == '\n')
+        if (keycode == 27)
             break;
     }
     
-    werase(new_win);
-    wrefresh(new_win);
+    del_panel(panel);
     delwin(new_win);
+    doupdate();
 }
 
 /**
@@ -278,22 +300,24 @@ void popup_warning(const char *text) {
  */
 void text_entry(const char *prompt, char *buf, int bufsiz) {
     WINDOW *new_win;
+    struct zz_win new_win_container;
     int keycode;
     int index = 0;
     bufsiz = bufsiz - 1;
 
-    new_win = newwin(term.h, term.w, 0, 0);
+    new_win_container = create_win(term.mapwin_h, term.mapwin_w, term.mapwin_y, term.mapwin_x);
+    new_win = new_win_container.win;
 
     while (buf[index] != '\0') {
         index++;
     }
-    werase(new_win);
     wcolor_on(new_win, MAGENTA);
     box(new_win, 0, 0);
     wcolor_off(new_win, MAGENTA);
     mvwprintw(new_win, 1, 1, prompt);
     mvwprintw(new_win, 3, 1, buf);
-    wrefresh(new_win);
+    update_panels();
+    doupdate();
 
     while ((keycode = handle_keys())) {
         if (keycode >= 32 && keycode <= 'z' && index < bufsiz) {
@@ -317,7 +341,7 @@ void text_entry(const char *prompt, char *buf, int bufsiz) {
         mvwprintw(new_win, 3, 1, buf);
         wrefresh(new_win);
     }
-    cleanup_win(new_win);
+    cleanup_win(new_win_container);
 }
 
 /**
@@ -328,6 +352,7 @@ void text_entry(const char *prompt, char *buf, int bufsiz) {
 void display_file_text(const char *fname) {
     FILE *fp;
     WINDOW *new_win;
+    PANEL *newpanel;
     int i = 1;
     int j = 0;
     int key = 0;
@@ -339,6 +364,7 @@ void display_file_text(const char *fname) {
     if (fp == NULL)
         return;
     new_win = newpad(MAX_FILE_LEN, max(term.w, MAPW));
+    newpanel = new_panel(new_win);
     while (getline(&line, &len, fp) != -1) {
         mvwprintw(new_win, i++, 1, line);
     }
@@ -354,10 +380,13 @@ void display_file_text(const char *fname) {
             case 27:
                 werase(new_win);
                 prefresh(new_win, j, 0, 0, 0, term.h - 1, term.w - 1);
+                del_panel(newpanel);
                 delwin(new_win);
                 f.update_map = 1;
                 f.update_msg = 1;
                 f.mode_map = 1;
+                update_panels();
+                doupdate();
                 return;
             case KEY_UP:
             case 'k':
@@ -374,8 +403,8 @@ void display_file_text(const char *fname) {
 
 /* Windowport code. Displays both sidebars. */
 void display_sb(void) {
-    curses_display_sb(sb_win_left);
-    curses_display_sb(sb_win_right);
+    curses_display_sb(sb_win_left.win);
+    curses_display_sb(sb_win_right.win);
 }
 
 /**
@@ -389,13 +418,13 @@ void curses_display_sb(WINDOW *sb_win) {
     werase(sb_win);
     box(sb_win, 0, 0);
     wattron(sb_win, A_STANDOUT);
-    if (sb_win == sb_win_right)
+    if (sb_win == sb_win_right.win)
         mvwprintw(sb_win, 0, 1, "Team %s", g.userbuf); 
     else
         mvwprintw(sb_win, 0, 1, "Opponent");
     wattroff(sb_win, A_STANDOUT);
 
-    if (term.hudmode == HUD_MODE_CHAR && sb_win == sb_win_right) {
+    if (term.hudmode == HUD_MODE_CHAR && sb_win == sb_win_right.win) {
         display_sb_stats(sb_win, &j, g.player);
         j++;
         if (!g.depth)
@@ -405,13 +434,13 @@ void curses_display_sb(WINDOW *sb_win) {
         else
             mvwprintw(sb_win, j++, 1, "FL: %d T: %d", g.depth, g.turns);
     } 
-    if (term.hudmode == HUD_MODE_CHAR && sb_win == sb_win_left && g.target != NULL) {
+    if (term.hudmode == HUD_MODE_CHAR && sb_win == sb_win_left.win && g.target != NULL) {
         display_sb_stats(sb_win, &j, g.target);
     } 
-    if (term.hudmode == HUD_MODE_HELP && sb_win == sb_win_left) {
+    if (term.hudmode == HUD_MODE_HELP && sb_win == sb_win_left.win) {
         display_sb_nearby(sb_win, &j);
     } 
-    if (term.hudmode == HUD_MODE_HELP && sb_win == sb_win_right) {
+    if (term.hudmode == HUD_MODE_HELP && sb_win == sb_win_right.win) {
         display_sb_controls(sb_win, &j);
     }
     wrefresh(sb_win);
@@ -586,52 +615,52 @@ int fullscreen_action(void) {
 
 void draw_lifebars(void) {
     char buf[4] = {'\0'};
+    WINDOW *bars_win_p = bars_win.win;
 
-    werase(bars_win);
-    box(bars_win, 0, 0);
+    werase(bars_win_p);
+    box(bars_win_p, 0, 0);
     /* Health Bar */
-    wcolor_on(bars_win, BRIGHT_RED);
-    render_bar(bars_win, g.player->hp, g.player->hpmax, term.msg_w / 2 + 4, 1,
+    wcolor_on(bars_win_p, BRIGHT_RED);
+    render_bar(bars_win_p, g.player->hp, g.player->hpmax, term.msg_w / 2 + 4, 1,
                     term.msg_w / 2 - 5, 0);
     if (g.target)
-        render_bar(bars_win, g.target->hp, g.target->hpmax, 1, 1,
+        render_bar(bars_win_p, g.target->hp, g.target->hpmax, 1, 1,
                     term.msg_w / 2 - 6, 1);       
-    wcolor_off(bars_win, BRIGHT_RED);
+    wcolor_off(bars_win_p, BRIGHT_RED);
     /* Center Text */
-    wcolor_on(bars_win, BRIGHT_YELLOW);
+    wcolor_on(bars_win_p, BRIGHT_YELLOW);
     switch(g.player->stance) {
         case STANCE_CROUCH:
-            mvwprintw(bars_win, 2, term.msg_w / 2 - 3, "Crouch");
+            mvwprintw(bars_win_p, 2, term.msg_w / 2 - 3, "Crouch");
             break;
         case STANCE_STAND:
-            mvwprintw(bars_win, 2, term.msg_w / 2 - 3, "Stand");
+            mvwprintw(bars_win_p, 2, term.msg_w / 2 - 3, "Stand");
             break;
         case STANCE_TECH:
-            mvwprintw(bars_win, 2, term.msg_w / 2 - 3, "Tech");
+            mvwprintw(bars_win_p, 2, term.msg_w / 2 - 3, "Tech");
             break;
         case STANCE_STUN:
-            wcolor_on(bars_win, BRIGHT_RED);
-            mvwprintw(bars_win, 2, term.msg_w / 2 - 3, "STUN");
-            wcolor_off(bars_win, BRIGHT_RED);
+            wcolor_on(bars_win_p, BRIGHT_RED);
+            mvwprintw(bars_win_p, 2, term.msg_w / 2 - 3, "STUN");
+            wcolor_off(bars_win_p, BRIGHT_RED);
             break;
         default:
-            mvwprintw(bars_win, 2, term.msg_w / 2 - 3, "UNKNOWN");
+            mvwprintw(bars_win_p, 2, term.msg_w / 2 - 3, "UNKNOWN");
             break;
     }
-    wcolor_off(bars_win, BRIGHT_YELLOW);
-    wcolor_on(bars_win, BRIGHT_GREEN);
+    wcolor_off(bars_win_p, BRIGHT_YELLOW);
+    wcolor_on(bars_win_p, BRIGHT_GREEN);
     snprintf(buf, sizeof(buf), "%d", g.player->energy);
-    mvwprintw(bars_win, 1, term.msg_w / 2 - 1, buf);
-    wcolor_off(bars_win, BRIGHT_GREEN);
+    mvwprintw(bars_win_p, 1, term.msg_w / 2 - 1, buf);
+    wcolor_off(bars_win_p, BRIGHT_GREEN);
     /* Energy Bar */
-    wcolor_on(bars_win, BRIGHT_BLUE);
-    render_bar(bars_win, g.player->hp, g.player->hpmax, term.msg_w / 2 + 4, 2,
+    wcolor_on(bars_win_p, BRIGHT_BLUE);
+    render_bar(bars_win_p, g.player->hp, g.player->hpmax, term.msg_w / 2 + 4, 2,
                     term.msg_w / 2 - 5, 0);
     if (g.target)
-        render_bar(bars_win, g.target->hp, g.target->hpmax, 1, 2,
+        render_bar(bars_win_p, g.target->hp, g.target->hpmax, 1, 2,
                     term.msg_w / 2 - 6, 1);    
-    wcolor_off(bars_win, BRIGHT_BLUE);
-    wrefresh(bars_win);
+    wcolor_off(bars_win_p, BRIGHT_BLUE);
 }
 
 /**
@@ -653,8 +682,7 @@ void draw_msg_window(int full) {
         cur_msg = cur_msg->next;
         i++;
     }
-    box(msgbox_win, 0, 0);
-    wrefresh(msgbox_win);
+    box(msgbox_win.win, 0, 0);
     if (full) {
         prefresh(msg_win, 0, 0, 0, 0, term.h, term.w);
     } else {
@@ -696,14 +724,14 @@ int map_put_tile(int x, int y, int mx, int my, int attr) {
 int map_put_actor(int x, int y, struct actor *actor, int attr) {
     int ret;
     if (actor == g.target)
-        wattron(map_win, A_UNDERLINE);
+        wattron(map_win.win, A_UNDERLINE);
     if (actor == g.player)
-        wattron(map_win, A_REVERSE);
+        wattron(map_win.win, A_REVERSE);
     ret = map_putch(x, y, actor->chr, attr);
     if (actor == g.target)
-        wattroff(map_win, A_UNDERLINE);
+        wattroff(map_win.win, A_UNDERLINE);
     if (actor == g.player)
-        wattroff(map_win, A_REVERSE);
+        wattroff(map_win.win, A_REVERSE);
     return ret;
 }
 
@@ -718,9 +746,9 @@ int map_put_actor(int x, int y, struct actor *actor, int attr) {
  */
 int map_putch(int x, int y, int chr, int attr) {
     int ret;
-    wcolor_on(map_win, attr);
-    ret = mvwaddch(map_win, y, x, chr); 
-    wcolor_off(map_win, attr);
+    wcolor_on(map_win.win, attr);
+    ret = mvwaddch(map_win.win, y, x, chr); 
+    wcolor_off(map_win.win, attr);
     return ret;
 }
 
@@ -744,7 +772,7 @@ int map_putch_truecolor(int x, int y, int chr, unsigned color) {
  * 
  */
 void clear_map(void) {
-    werase(map_win);
+    werase(map_win.win);
 }
 
 /**
@@ -753,8 +781,8 @@ void clear_map(void) {
  * 
  */
 void refresh_map(void) {
-    wmove(map_win, g.player->y - g.cy, g.player->x - g.cx);
-    wrefresh(map_win);
+    wmove(map_win.win, g.player->y - g.cy, g.player->x - g.cx);
+    wrefresh(map_win.win);
 }
 
 /**
