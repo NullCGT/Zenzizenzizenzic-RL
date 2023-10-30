@@ -277,7 +277,7 @@ void popup_warning(const char *text) {
     wcolor_on(new_win, RED);
     box(new_win, 0, 0);
     wcolor_off(new_win, RED);
-    mvwprintw(new_win, 1, 1, text);
+    mvwprintw(new_win, 1, 1, "%s", text);
     update_panels();
     doupdate();
 
@@ -314,8 +314,8 @@ void text_entry(const char *prompt, char *buf, int bufsiz) {
     wcolor_on(new_win, MAGENTA);
     box(new_win, 0, 0);
     wcolor_off(new_win, MAGENTA);
-    mvwprintw(new_win, 1, 1, prompt);
-    mvwprintw(new_win, 3, 1, buf);
+    mvwprintw(new_win, 1, 1, "%s", prompt);
+    mvwprintw(new_win, 3, 1, "%s", buf);
     update_panels();
     doupdate();
 
@@ -337,8 +337,8 @@ void text_entry(const char *prompt, char *buf, int bufsiz) {
         wcolor_on(new_win, MAGENTA);
         box(new_win, 0, 0);
         wcolor_off(new_win, MAGENTA);
-        mvwprintw(new_win, 1, 1, prompt);
-        mvwprintw(new_win, 3, 1, buf);
+        mvwprintw(new_win, 1, 1, "%s", prompt);
+        mvwprintw(new_win, 3, 1, "%s", buf);
         wrefresh(new_win);
     }
     cleanup_win(new_win_container);
@@ -366,7 +366,7 @@ void display_file_text(const char *fname) {
     new_win = newpad(MAX_FILE_LEN, max(term.w, MAPW));
     newpanel = new_panel(new_win);
     while (getline(&line, &len, fp) != -1) {
-        mvwprintw(new_win, i++, 1, line);
+        mvwprintw(new_win, i++, 1, "%s", line);
     }
     free(line);
     fclose(fp);
@@ -457,7 +457,7 @@ void display_sb_controls(WINDOW *sb_win, int *j) {
     int actmax = (g.debug) ? A_WISH : A_MAGICMAP;
     for (int i = A_REST; i < actmax; i++) {
         action = stringify_action(i);
-        mvwprintw(sb_win, (*j)++, 1, action);
+        mvwprintw(sb_win, (*j)++, 1, "%s", action);
         free(action);
     }
 }
@@ -474,14 +474,14 @@ void display_sb_nearby(WINDOW *sb_win, int *j) {
     wattron(sb_win, A_UNDERLINE);
     memset(buf, 0, 128);
     snprintf(buf, sizeof(buf), "Nearby");
-    mvwprintw(sb_win, (*j)++, 1, buf);
+    mvwprintw(sb_win, (*j)++, 1, "%s", buf);
     wattroff(sb_win, A_UNDERLINE);
     while (cur_npc != NULL) {
         if (is_visible(cur_npc->x, cur_npc->y) && cur_npc != g.player) {
             memset(buf, 0, 128);
             snprintf(buf, sizeof(buf), "%c", cur_npc->chr);
             wcolor_on(sb_win, cur_npc->color);
-            mvwprintw(sb_win, *j, 1, buf);
+            mvwprintw(sb_win, *j, 1, "%s", buf);
             wcolor_off(sb_win, cur_npc->color);
             
             if (is_aware(cur_npc, g.player)) {
@@ -492,7 +492,7 @@ void display_sb_nearby(WINDOW *sb_win, int *j) {
 
             memset(buf, 0, 128);
             snprintf(buf, sizeof(buf), "%s (%d, %d)", actor_name(cur_npc, 0), cur_npc->x, cur_npc->y);
-            mvwprintw(sb_win, (*j)++, 4, buf);
+            mvwprintw(sb_win, (*j)++, 4, "%s", buf);
         }
         cur_npc = cur_npc->next;
     }
@@ -505,6 +505,7 @@ void display_sb_nearby(WINDOW *sb_win, int *j) {
  * @param i A pointer to the y value to print at.
  * @param actor The actor to display stats for.
  */
+/* TODO: Remove unecessary buffer usage. */
 void display_sb_stats(WINDOW *win, int *i, struct actor *actor) {
     char buf[128];
     struct attack *cur_attack = get_active_attack(g.active_attack_index);
@@ -516,7 +517,7 @@ void display_sb_stats(WINDOW *win, int *i, struct actor *actor) {
         snprintf(buf, sizeof(buf), "%s", actor_name(actor, NAME_CAP));
     else
         snprintf(buf, sizeof(buf), "%s (target)", actor_name(actor, NAME_CAP));
-    mvwprintw(win, *i, 1, buf);
+    mvwprintw(win, *i, 1, "%s", buf);
     *i+= 1;
     wattroff(win, A_UNDERLINE);
     mvwprintw(win, *i, 1, "EV: %d%% AC: %d%% EN: %d\t", actor->evasion, actor->accuracy, actor->energy);
@@ -539,7 +540,7 @@ void display_sb_stats(WINDOW *win, int *i, struct actor *actor) {
                     (actor == g.player && (g.active_attack_index % MAX_ATTK == k)) ? "*" : " ", k + 1,
                     g.active_attacker == g.player ? "Unarmed" : actor_name(g.active_attacker, NAME_CAP),  /* Bugged line */
                     cur_attack->accuracy, cur_attack->dam);
-            mvwprintw(win, *i, 1, buf);
+            mvwprintw(win, *i, 1, "%s", buf);
             print_hitdescs(win, (*i)++, 1 + strlen(buf), cur_attack->hitdescs, 0);
             k++;
         }
@@ -566,7 +567,7 @@ void print_hitdescs(WINDOW *win, int y, int x, short hitdescs, unsigned char bla
             memset(buf, 0, 16);
             wcolor_on(win, hitdescs_arr[i].color);
             snprintf(buf, sizeof(buf), "%c", hitdescs_arr[i].str[0]);
-            mvwprintw(win, y, x++, buf);
+            mvwprintw(win, y, x++, "%s", buf);
             wcolor_off(win, hitdescs_arr[i].color);
         } else if (blanks) {
             mvwprintw(win, y, x++, "_");
@@ -597,9 +598,9 @@ void render_bar(WINDOW *win, int cur, int max, int x, int y,
         }
     }
     if (reverse)
-        mvwprintw(win, y, x + width - strlen(buf), buf);
+        mvwprintw(win, y, x + width - strlen(buf), "%s", buf);
     else
-        mvwprintw(win, y, x + 1, buf);
+        mvwprintw(win, y, x + 1, "%s", buf);
     wattroff(win, A_REVERSE);
 }
 
@@ -651,7 +652,7 @@ void draw_lifebars(void) {
     wcolor_off(bars_win_p, BRIGHT_YELLOW);
     wcolor_on(bars_win_p, BRIGHT_GREEN);
     snprintf(buf, sizeof(buf), "%d", g.player->energy);
-    mvwprintw(bars_win_p, 1, term.msg_w / 2 - 1, buf);
+    mvwprintw(bars_win_p, 1, term.msg_w / 2 - 1, "%s", buf);
     wcolor_off(bars_win_p, BRIGHT_GREEN);
     /* Energy Bar */
     wcolor_on(bars_win_p, BRIGHT_BLUE);

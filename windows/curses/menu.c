@@ -78,7 +78,7 @@ void display_menu(struct menu *menu) {
     box(menu_win_p, 0, 0);
     if (menu->title) {
         wattron(menu_win_p, A_STANDOUT);
-        mvwprintw(menu_win_p, 0, 1, menu->title);
+        mvwprintw(menu_win_p, 0, 1, "%s", menu->title);
         wattroff(menu_win_p, A_STANDOUT);
     }
     wcolor_off(menu_win_p, YELLOW);
@@ -90,7 +90,7 @@ void display_menu(struct menu *menu) {
             wattron(menu_win_p, A_BOLD);
             wattron(menu_win_p, A_UNDERLINE);
         }
-        mvwprintw(menu_win_p, index + 2, 1, itembuf);
+        mvwprintw(menu_win_p, index + 2, 1, "%s", itembuf);
         wattroff(menu_win_p, A_BOLD);
         wattroff(menu_win_p, A_UNDERLINE);
         cur = cur->next;
