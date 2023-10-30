@@ -30,6 +30,7 @@
 #include "save.h"
 #include "spawn.h"
 #include "parser.h"
+#include "version.h"
 
 void handle_exit(void);
 void handle_sigwinch(int);
@@ -54,10 +55,10 @@ void handle_exit(void) {
     if (g.debug)
         printf("Freed %d actors.\n", freed);
     if (term.saved_locale != NULL) {
-        printf("Restoring locale...\n");
+        if (g.debug) printf("Restoring locale...\n");
         setlocale (LC_ALL, term.saved_locale);
         free(term.saved_locale);
-        printf("Locale restored.\n");
+        if (g.debug) printf("Locale restored.\n");
     }
     printf("Team %s will return...\n", g.userbuf);
     return;
@@ -92,6 +93,8 @@ void handle_sigsegv(int sig) {
     cleanup_screen();
     fprintf(stderr, "Error: signal %d:\n", sig);
     backtrace_symbols_fd(array, size, STDERR_FILENO);
+    printf("\nWell, that's embarassing. The game appears to have suplexed itself.");
+    printf("\nPlease report any bugs at %s.\n", REPO_URL);
     exit(1);
 }
 

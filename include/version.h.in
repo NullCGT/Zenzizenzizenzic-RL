@@ -9,3 +9,5 @@
 #define VERSION_PATCH ${VERSION_PATCH}
 /* Release, Debug, Test, etc. */
 #define RELEASE_TYPE "${RELEASE_TYPE}"
+/* Report Repo */
+#define REPO_URL "https://github.com/NullCGT/Zenzizenzizenzic-RL"
