@@ -128,8 +128,10 @@ void json_to_monster_list(const char *fname) {
     cJSON *actor_json;
     struct actor *new_actor;
 
-    if (!all_json)
+    if (!all_json) {
+        panik("Could not read creatures: %s\n", fname);
         return;
+    }
 
     // read each one into the actor array. must be freed at a later point.
     cJSON_ArrayForEach(actor_json, all_json) {
@@ -153,8 +155,10 @@ void json_to_item_list(const char *fname) {
     cJSON *actor_json;
     struct actor *new_actor;
 
-    if (!all_json)
+    if (!all_json) {
+        panik("Could not read items: %s\n", fname);
         return;
+    }
 
     // read each one into the actor array. must be freed at a later point.
     cJSON_ArrayForEach(actor_json, all_json) {

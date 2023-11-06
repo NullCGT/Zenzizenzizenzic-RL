@@ -175,6 +175,7 @@ void actor_sanity_checks(struct actor *actor) {
  */
 int free_actor(struct actor *actor) {
     int count = 1;
+    int target = (actor == g.target);
     if (actor->name)
         free(actor->name);
     if (actor->invent)
@@ -187,6 +188,7 @@ int free_actor(struct actor *actor) {
         free(actor->equip);
     free(actor);
     actor = NULL;
+    if (target) g.target = NULL;
     return count;
 }
 

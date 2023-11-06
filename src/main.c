@@ -111,6 +111,7 @@ void new_game(void) {
     /* Spawn player */
     if (g.player == NULL) {
         g.player = spawn_named_creature("zenzi", 0, 0);
+        if (!g.player) panik("Failed to spawn player?");
         g.player->unique = 1;
         g.active_attacker = g.player;
     }

@@ -238,3 +238,18 @@ int yn_prompt(const char *prompt, int def_choice) {
     }
     return def_choice;
 }
+
+/**
+ * @brief Quit the game with an error message.
+ * 
+ * @param message The error message to display.
+ */
+void panik(const char *format, ...) {
+    va_list args;
+    
+    cleanup_screen();
+    va_start(args, format);
+    vfprintf(stderr, format, args);
+    va_end(args);
+    exit(1);
+}

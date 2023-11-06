@@ -21,5 +21,5 @@ int logma(int, const char *, ...);
 int logm_warning(const char *, ...);
 const char *an(const char *);
 int yn_prompt(const char *, int);
-
+void panik(const char *, ...);
 #endif
