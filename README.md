@@ -25,43 +25,17 @@ cmake --build build
 The game binary and necessary data files will appear in the newly-created build
 directory.
 
-## Combat
+## Combat Basics
 
-### Attack Types
+An attack can be one or more of four types: Low, Mid, High, or Grab. Conversely, a character can be in one of three stances: Crouch, Stand, or Tech. The way an attack interacts with a target depends on the stance that the target is in, as shown in the following table.
 
-An attack can be one or more of the following types:
-- Low:
-    - Hits standing characters.
-    - Blocked by crouching characters.
-- Mid:
-    - Hits teching characters.
-    - Blocked by standing or crouching characters.
-    - Often very high accuracy.
-- High:
-    - Hits crouching characters.
-    - Often low accuracy, but high damage.
-- Grab:
-    - Hits crouching or standing characters.
-    - Deflected by teching characters.
+|          | Low   | Mid   | High  | Tech  |
+|----------|-------|-------|-------|-------|
+|**Crouch**| Block | Block | Hit   | Hit   |
+|**Stand**| Hit   | Block | Block | Hit   |
+|**Tech** | Hit   | Hit   | Hit   | Block |
 
-### Blocking Attacks
-
-At any time, a character can be in one of threee stances, each of which has different effects.
-- Crouching:
-    - Automatically block low and mid attacks.
-    - Entered by pressing '<'
-    - Lasts until manually exited.
-- Standing:
-    - Automatically block mid and high attacks.
-    - Entered by pressing '>'.
-    - Lasts until manually exited.
-- Teching:
-    - Deflect grabs.
-    - Entered by pressing '.' or executing a grab attack.
-    - Lasts for one turn, after which the character returns to their previous stance.
-
-When an attack is blocked, the blocker takes reduced damage. When a grab is
-deflected, the blocker takes no damage and the attacker is left vulnerable.
+If an attack hits, the target takes full damage and enters a stunned state. If an attack is blocked, the target takes only partial damage and is not stunned.
 
 ## FAQ
 
