@@ -1,5 +1,6 @@
 # Zenzizenzizenzic
 
+![Release Status](https://github.com/NullCGT/Zenzizenzizenzic-RL/actions/workflows/cmake-single-platform.yml/badge.svg)
 ![Release Status](https://github.com/NullCGT/Zenzizenzizenzic-RL/actions/workflows/release.yml/badge.svg?branch=main)
 
 A traditional roguelike with mechanics that mimic those found in fighting games.
