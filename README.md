@@ -1,10 +1,10 @@
 # Zenzizenzizenzic
 
-![Screenshot](/img/screenshot.png)
-## Overview
+![Release Status](https://github.com/NullCGT/Zenzizenzizenzic-RL/actions/workflows/release.yml/badge.svg?branch=main)
 
-Zenzizenzizenzic is a traditional roguelike. It's still pretty early in development, so please don't
-judge it too harshly yet.
+A traditional roguelike with mechanics that mimic those found in fighting games.
+
+![Screenshot](/img/screenshot.png)
 
 ## Command Line Options
 | Syntax      | Example | Purpose           |
