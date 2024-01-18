@@ -191,7 +191,7 @@ int main(int argc, char **argv) {
     argp_parse(&argp, argc, argv, 0, 0, &arguments);
     if (g.userbuf[0] == '\0')
         getlogin_r(g.userbuf, sizeof(g.userbuf));
-    if (g.userbuf[0] == ' ')
+    if (g.userbuf[0] == ' ' || g.userbuf[0] == '\0')
         snprintf(g.userbuf, sizeof(g.userbuf), "Lion");
     if (g.userbuf[0] > 'Z')
         g.userbuf[0] = g.userbuf[0] - 32;
