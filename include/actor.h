@@ -62,7 +62,7 @@ struct actor {
     int id, chr;
     unsigned char color;
     /* Mutable attributes */
-    unsigned char x, y;
+    unsigned char x, y, lv;
     int energy;
     int hp, hpmax;
     int speed; /* For creatures, denotes move speed. For items, attack speed. */

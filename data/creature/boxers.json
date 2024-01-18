@@ -1,0 +1,58 @@
+{
+    "flyweight": {
+        "name": "flyweight",
+        "lv": 1,
+        "appearance": "boxer",
+        "chr": "B",
+        "color": "yellow",
+        "hp": 12,
+        "speed": 40,
+        "attacks": [
+            {"damage": 6, "accuracy": 80, "types": ["Mid"]}
+        ],
+        "ai": { "seekdef": 3 }
+    },
+    "bantamweight": {
+        "name": "bantamweight",
+        "lv": 5,
+        "appearance": "boxer",
+        "chr": "B",
+        "color": "white",
+        "hp": 20,
+        "speed": 40,
+        "attacks": [
+            {"damage": 6, "accuracy": 80, "types": ["Mid"]},
+            {"damage": 8, "accuracy": 60, "types": ["Mid"]}
+        ],
+        "ai": { "seekdef": 3 }
+    },
+    "featherweight": {
+        "name": "featherweight",
+        "lv": 10,
+        "appearance": "boxer",
+        "chr": "B",
+        "color": "blue",
+        "hp": 40,
+        "speed": 40,
+        "attacks": [
+            {"damage": 8, "accuracy": 80, "types": ["Mid"]},
+            {"damage": 10, "kb":1, "accuracy": 70, "types": ["Mid"]}
+        ],
+        "ai": { "seekdef": 3 }
+    },
+    "lightweight": {
+        "name": "lightweight",
+        "lv": 15,
+        "appearance": "boxer",
+        "chr": "B",
+        "color": "magenta",
+        "hp": 80,
+        "speed": 40,
+        "attacks": [
+            {"damage": 8, "kb": 1, "accuracy": 80, "types": ["Mid"]},
+            {"damage": 10, "kb": 1, "accuracy": 80, "types": ["Mid"]},
+            {"damage": 12, "accuracy": 60, "types": ["High"]}
+        ],
+        "ai": { "seekdef": 3 }
+    }
+}

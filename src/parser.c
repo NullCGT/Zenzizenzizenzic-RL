@@ -87,12 +87,13 @@ struct actor *actor_from_json(cJSON *actor_json) {
     *actor = (struct actor) { 0 };
     
     /* Parse Fields */
+    field = cJSON_GetObjectItemCaseSensitive(actor_json, "lv");
+    actor->lv = field->valueint;
     actor_primitives_from_json(actor, actor_json);
     field = cJSON_GetObjectItemCaseSensitive(actor_json, "attacks");
     attacks_from_json(actor, field);
     field = cJSON_GetObjectItemCaseSensitive(actor_json, "color");
     color_from_json(&(actor->color), field);
-
     /* Parse Components */
     field = cJSON_GetObjectItemCaseSensitive(actor_json, "ai");
     if (field) {
@@ -123,7 +124,6 @@ struct actor *actor_from_json(cJSON *actor_json) {
 
 void json_to_monster_list(const char *fname) {
     // comb through every file in the folder via looking through the master file
-    int i = 0;
     cJSON *all_json = json_from_file(fname);
     cJSON *actor_json;
     struct actor *new_actor;
@@ -141,8 +141,7 @@ void json_to_monster_list(const char *fname) {
         }
         new_actor = actor_from_json(actor_json);
         new_actor->id = g.total_monsters;
-        g.monsters[i] = new_actor;
-        i++;
+        g.monsters[g.total_monsters] = new_actor;
         g.total_monsters++;
     }
     //cJSON_Delete(all_json);
@@ -150,7 +149,6 @@ void json_to_monster_list(const char *fname) {
 }
 
 void json_to_item_list(const char *fname) {
-    int i = 0;
     cJSON *all_json = json_from_file(fname);
     cJSON *actor_json;
     struct actor *new_actor;
@@ -168,8 +166,7 @@ void json_to_item_list(const char *fname) {
         }
         new_actor = actor_from_json(actor_json);
         new_actor->id = g.total_items;
-        g.items[i] = new_actor;
-        i++;
+        g.items[g.total_items] = new_actor;
         g.total_items++;
     }
     //cJSON_Delete(all_json);

@@ -1,6 +1,7 @@
 {
     "knife": {
         "name": "combat knife",
+        "lv": 0,
         "appearance": "knife",
         "chr": "/",
         "color": "white",
@@ -16,6 +17,7 @@
     },
     "pipe": {
         "name": "lead pipe",
+        "lv": 0,
         "appearance": "pipe",
         "chr": "/",
         "color": "cyan",

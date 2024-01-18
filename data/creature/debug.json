@@ -1,0 +1,15 @@
+{
+    "sandbag": {
+        "name": "sandbag",
+        "lv": 0,
+        "appearance": "punching bag",
+        "chr": "S",
+        "color": "blue",
+        "hp": 100,
+        "speed": 40,
+        "attacks": [
+            {"damage": 6, "accuracy": 0, "types": ["Mid"]}
+        ],
+        "ai": { "seekdef": 10 }
+    }
+}

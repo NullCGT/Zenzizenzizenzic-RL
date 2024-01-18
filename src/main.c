@@ -104,7 +104,10 @@ void handle_sigsegv(int sig) {
  * 
  */
 void new_game(void) {
-    json_to_monster_list("data/creature/creatures.json");
+    json_to_monster_list("data/creature/characters.json");
+    json_to_monster_list("data/creature/boxers.json");
+    json_to_monster_list("data/creature/employees.json");
+    json_to_monster_list("data/creature/debug.json");
     json_to_item_list("data/item/weapons.json");
     if (g.practice || g.debug) {
         logm("The high score list is disabled due to the game mode.");
