@@ -24,8 +24,8 @@
 #define GRAB 0x08
 
 /* Stances */
-#define STANCE_CROUCH LOW | MID
-#define STANCE_STAND MID | HIGH
+#define STANCE_CROUCH (LOW | MID)
+#define STANCE_STAND (MID | HIGH)
 #define STANCE_TECH GRAB
 #define STANCE_STUN 0x0
 #define MAX_HITDESC 4

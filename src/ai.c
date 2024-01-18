@@ -139,7 +139,7 @@ struct attack choose_attack(struct actor *aggressor, struct actor *target) {
     int i, j;
     (void) target; /* TODO: Implement attack favoring. */
     if (aggressor == g.player) {
-        return *(get_active_attack(g.active_attack_index));
+        return *(get_active_attack(g.player, g.active_attack_index));
     }
     for (i = 0; i < MAX_ATTK; i++) {
         if (is_noatk(aggressor->attacks[i]))

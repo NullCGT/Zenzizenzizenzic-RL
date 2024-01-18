@@ -509,7 +509,7 @@ void display_sb_nearby(WINDOW *sb_win, int *j) {
 /* TODO: Remove unecessary buffer usage. */
 void display_sb_stats(WINDOW *win, int *i, struct actor *actor) {
     char buf[128];
-    struct attack *cur_attack = get_active_attack(g.active_attack_index);
+    struct attack *cur_attack = get_active_attack(actor, g.active_attack_index);
     int k = 0;
 
     memset(buf, 0, 128);
@@ -526,7 +526,7 @@ void display_sb_stats(WINDOW *win, int *i, struct actor *actor) {
 
     /* TODO: Clean up this epic kludge */
     for (int index = 0; index < MAX_ATTK * 2; index++) {
-        cur_attack = get_active_attack(index);
+        cur_attack = get_active_attack(actor, index);
         if ((EWEP(actor) && (index > MAX_ATTK || is_noatk(EWEP(actor)->attacks[index]))) ||
             (EOFF(actor) && !EWEP(actor) && (index >= MAX_ATTK || is_noatk(EOFF(actor)->attacks[index]))) ||
             (!(EWEP(actor) || EOFF(actor)) && (index >= MAX_ATTK || is_noatk(actor->attacks[index])))) {

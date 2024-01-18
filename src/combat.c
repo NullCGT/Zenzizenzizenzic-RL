@@ -192,7 +192,9 @@ void apply_knockback(struct actor* target, int velocity, int x, int y) {
  * tech = 2
  */
 int weak_res(short hitdesc, short stance) {
+    logm("%d, %d", hitdesc, stance);
     if ((stance & STANCE_STUN)) { /* If stunned, all attacks hit. */
+        logm("STUN");
         return BHIT;
     }
     if ((hitdesc & GRAB) && (stance & GRAB))
@@ -251,11 +253,11 @@ int calculate_accuracy(struct actor *actor, struct attack *attack) {
  * @param index the index of the attack to get
  * @return struct attack* The pointer to the active attack.
  */
-struct attack *get_active_attack(int index) {
-    if (EWEP(g.player) && !EOFF(g.player)) return &EWEP(g.player)->attacks[index % MAX_ATTK];
-    else if (EWEP(g.player) && EOFF(g.player)) return index < MAX_ATTK ? &EWEP(g.player)->attacks[index] : &EOFF(g.player)->attacks[index % MAX_ATTK];
-    else if (EOFF(g.player)) return &EOFF(g.player)->attacks[index % MAX_ATTK];
-    else return &g.player->attacks[index % MAX_ATTK];
+struct attack *get_active_attack(struct actor *actor, int index) {
+    if (EWEP(actor) && !EOFF(actor)) return &EWEP(actor)->attacks[index % MAX_ATTK];
+    else if (EWEP(actor) && EOFF(actor)) return index < MAX_ATTK ? &EWEP(actor)->attacks[index] : &EOFF(actor)->attacks[index % MAX_ATTK];
+    else if (EOFF(actor)) return &EOFF(actor)->attacks[index % MAX_ATTK];
+    else return &actor->attacks[index % MAX_ATTK];
     return NULL;
 }
 

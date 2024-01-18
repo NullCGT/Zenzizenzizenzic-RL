@@ -450,7 +450,7 @@ struct action *get_action(void) {
     int keycode = handle_keys();
     if (keycode >= 49 && keycode < 57) {
         g.active_attack_index = keycode - 49;
-        while (!get_active_attack(g.active_attack_index)->dam)
+        while (!get_active_attack(g.player, g.active_attack_index)->dam)
             g.active_attack_index++;
     }
     for (i = 0; i < ACTION_COUNT; i++) {
