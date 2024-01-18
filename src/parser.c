@@ -262,12 +262,26 @@ struct actor *attacks_from_json(struct actor *actor, cJSON *attacks_json) {
     cJSON_ArrayForEach(attack_json, attacks_json) {
         if (i > MAX_ATTK) break;
         field = cJSON_GetObjectItemCaseSensitive(attack_json, "damage");
-        actor->attacks[i].dam = field->valueint;
+        if (field)
+            actor->attacks[i].dam = field->valueint;
+        else
+            actor->attacks[i].dam = 1;
         field = cJSON_GetObjectItemCaseSensitive(attack_json, "kb");
         if (field)
             actor->attacks[i].kb = field->valueint;
         field = cJSON_GetObjectItemCaseSensitive(attack_json, "accuracy");
-        actor->attacks[i].accuracy = field->valueint;
+        if (field)
+            actor->attacks[i].accuracy = field->valueint;
+        field = cJSON_GetObjectItemCaseSensitive(attack_json, "stun");
+        if (field)
+            actor->attacks[i].stun = field->valueint;
+        else
+            actor->attacks[i].stun = TURN_FULL;
+        field = cJSON_GetObjectItemCaseSensitive(attack_json, "recovery");
+        if (field)
+            actor->attacks[i].recovery = field->valueint;
+        else
+            actor->attacks[i].recovery = TURN_FULL;
         field = cJSON_GetObjectItemCaseSensitive(attack_json, "types");
         hitdescs_from_json(&(actor->attacks[i].hitdescs), field);
         i++;

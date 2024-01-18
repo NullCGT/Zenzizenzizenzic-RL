@@ -33,6 +33,7 @@ void setup_locale(void);
 void setup_colors(void);
 void popup_warning(const char *);
 void print_hitdescs(WINDOW *, int, int, short, unsigned char);
+void print_stance(struct actor *, WINDOW *, int, int);
 void render_bar(WINDOW*, int, int, int, int, int, int);
 int handle_mouse(void);
 void curses_display_sb(WINDOW *);
@@ -536,7 +537,7 @@ void display_sb_stats(WINDOW *win, int *i, struct actor *actor) {
         }
         if (cur_attack && cur_attack->dam) {
             memset(buf, 0, 128);
-            snprintf(buf, sizeof(buf), "%s%d %s [%d%%%%]=>%d", 
+            snprintf(buf, sizeof(buf), "%s%d %s [%d%%]=>%d", 
                     (actor == g.player && (g.active_attack_index % MAX_ATTK == k)) ? "*" : " ", k + 1,
                     g.active_attacker == g.player ? "Unarmed" : actor_name(g.active_attacker, NAME_CAP),  /* Bugged line */
                     cur_attack->accuracy, cur_attack->dam);
@@ -556,6 +557,10 @@ void display_sb_stats(WINDOW *win, int *i, struct actor *actor) {
             mvwprintw(win, *i, 1, "Unaware");
         }
         *i += 1;
+        if (g.debug) {
+            print_stance(actor, win, *i, 1);
+        }
+        
     }
 }
 
@@ -614,6 +619,36 @@ int fullscreen_action(void) {
     return 0;
 }
 
+/**
+ * @brief Print the current stance of an actor to the window.
+ * 
+ * @param actor
+ * @param win 
+ * @param y 
+ * @param x 
+ */
+void print_stance(struct actor *actor, WINDOW *win, int y, int x) {
+    switch(actor->stance) {
+        case STANCE_CROUCH:
+            mvwprintw(win, y, x, "Crouch");
+            break;
+        case STANCE_STAND:
+            mvwprintw(win, y, x, "Stand");
+            break;
+        case STANCE_TECH:
+            mvwprintw(win, y, x, "Tech");
+            break;
+        case STANCE_STUN:
+            wcolor_on(win, BRIGHT_RED);
+            mvwprintw(win, y, x, "STUN");
+            wcolor_off(win, BRIGHT_RED);
+            break;
+        default:
+            mvwprintw(win, y, x, "UNKNOWN");
+            break;
+    }
+}
+
 void draw_lifebars(void) {
     char buf[4] = {'\0'};
     WINDOW *bars_win_p = bars_win.win;
@@ -630,25 +665,7 @@ void draw_lifebars(void) {
     wcolor_off(bars_win_p, BRIGHT_RED);
     /* Center Text */
     wcolor_on(bars_win_p, BRIGHT_YELLOW);
-    switch(g.player->stance) {
-        case STANCE_CROUCH:
-            mvwprintw(bars_win_p, 2, term.msg_w / 2 - 3, "Crouch");
-            break;
-        case STANCE_STAND:
-            mvwprintw(bars_win_p, 2, term.msg_w / 2 - 3, "Stand");
-            break;
-        case STANCE_TECH:
-            mvwprintw(bars_win_p, 2, term.msg_w / 2 - 3, "Tech");
-            break;
-        case STANCE_STUN:
-            wcolor_on(bars_win_p, BRIGHT_RED);
-            mvwprintw(bars_win_p, 2, term.msg_w / 2 - 3, "STUN");
-            wcolor_off(bars_win_p, BRIGHT_RED);
-            break;
-        default:
-            mvwprintw(bars_win_p, 2, term.msg_w / 2 - 3, "UNKNOWN");
-            break;
-    }
+    print_stance(g.player, bars_win_p, 2, term.msg_w / 2 - 3);
     wcolor_off(bars_win_p, BRIGHT_YELLOW);
     wcolor_on(bars_win_p, BRIGHT_GREEN);
     snprintf(buf, sizeof(buf), "%d", g.player->energy);

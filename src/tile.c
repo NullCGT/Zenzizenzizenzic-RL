@@ -15,6 +15,7 @@
 #include "message.h"
 #include "windows.h"
 #include "render.h"
+#include "ai.h"
 
 
 struct permtile permtiles[] = {
@@ -80,7 +81,7 @@ int open_door(struct actor *actor, int x, int y) {
         logm("%s opens a door.", actor_name(actor, NAME_THE));
     } else if (is_visible(x, y))
         logm("The door opens.");
-    return 100;
+    return TURN_FULL;
 }
 
 /**
@@ -121,5 +122,5 @@ int close_door(struct actor *actor, int x, int y) {
         logm("%s closes a door.", actor_name(actor, NAME_THE));
     } else if (is_visible(x, y))
         logm("The door closes.");
-    return 100;
+    return TURN_FULL;
 }

@@ -19,6 +19,7 @@
 #include "menu.h"
 #include "register.h"
 #include "spawn.h"
+#include "ai.h"
 #include "combat.h"
 
 void clean_item_slots(struct actor *, struct actor *);
@@ -353,7 +354,7 @@ int equip_item(struct actor *actor, struct actor *item, int inslot) {
     logm("%s %s %s.", actor_name(actor, NAME_THE | NAME_CAP),
                       in_danger(actor) ? "whips out" : slot_types[item->item->slot].on_msg, 
                       actor_name(item, NAME_A));
-    return 100;
+    return TURN_FULL;
 }
 
 /**
@@ -436,7 +437,7 @@ int throw_item(struct actor *actor, struct actor *item) {
     }
     add_actor_to_main(item);
     push_actor(item, nx, ny);
-    return 100;
+    return TURN_FULL;
 }
 
 int takeoff_item(struct actor *actor, struct actor *item) {
@@ -455,5 +456,5 @@ int takeoff_item(struct actor *actor, struct actor *item) {
             in_danger(actor) ? "hastily " : "", 
             slot_types[item->item->slot].off_msg, actor_name(item, NAME_A));
     clean_item_slots(actor, item);
-    return 100;
+    return TURN_FULL;
 }

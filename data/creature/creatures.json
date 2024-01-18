@@ -4,16 +4,27 @@
         "chr": "@",
         "color": "white",
         "hp": 40,
-        "speed": 100,
+        "speed": 40,
         "unique": 1,
         "attacks": [
-            { "damage": 6, "accuracy": 70, "types": ["Low"] },
-            { "damage": 8, "accuracy": 95, "types": ["Mid"] },
-            { "damage": 12, "accuracy": 50, "kb": 1, "types": ["High"] },
-            { "damage": 6, "kb": 2, "accuracy": 70, "types": ["Grab"] }
+            { "damage": 6, "stun": 40, "accuracy": 70, "types": ["Low"] },
+            { "damage": 8, "stun": 80, "accuracy": 95, "types": ["Mid"] },
+            { "damage": 12, "stun": 160, "recovery": 80, "accuracy": 50, "kb": 1, "types": ["High"] },
+            { "damage": 6, "stun": 80, "kb": 2, "accuracy": 70, "types": ["Grab"] }
         ],
-        "equip" : {},
-        "description": "A standarad fighter. Easy to use."
+        "equip" : {}
+    },
+    "sandbag": {
+        "name": "sandbag",
+        "appearance": "punching bag",
+        "chr": "S",
+        "color": "blue",
+        "hp": 100,
+        "speed": 40,
+        "attacks": [
+            {"damage": 6, "accuracy": 0, "types": ["Mid"]}
+        ],
+        "ai": { "seekdef": 10 }
     },
     "sdrone": {
         "name": "spy drone",
@@ -21,15 +32,14 @@
         "chr": "r",
         "color": "black",
         "hp": 1,
-        "speed": 50,
+        "speed": 20,
         "attacks": [
             { "damage": 4, "accuracy": 75, "types": ["High"] }
         ],
         "ai": {
             "seekdef": 10
         },
-        "grow_up": "assault drone",
-        "description": "This aerial drone has the logo of Polaris Industries stamped on it."
+        "grow_up": "assault drone"
     },
     "flunky": {
         "name": "flunky",
@@ -37,7 +47,7 @@
         "chr": "@",
         "color": "green",
         "hp": 12,
-        "speed": 100,
+        "speed": 40,
         "attacks": [
             { "damage": 6, "kb": 1, "accuracy": 70, "types": ["Mid"] },
             { "damage": 8, "accuracy": 30, "types": ["Low"] }
@@ -46,5 +56,57 @@
             "seekdef": 5
         },
         "description": "One of Polaris's goons. It's just a day job."
+    },
+    "flyweight": {
+        "name": "flyweight",
+        "appearance": "boxer",
+        "chr": "B",
+        "color": "yellow",
+        "hp": 12,
+        "speed": 40,
+        "attacks": [
+            {"damage": 6, "accuracy": 80, "types": ["Mid"]}
+        ],
+        "ai": { "seekdef": 3 }
+    },
+    "featherweight": {
+        "name": "featherweight",
+        "appearance": "boxer",
+        "chr": "B",
+        "color": "white",
+        "hp": 20,
+        "speed": 40,
+        "attacks": [
+            {"damage": 6, "accuracy": 80, "types": ["Mid"]},
+            {"damage": 8, "accuracy": 60, "types": ["Mid"]}
+        ],
+        "ai": { "seekdef": 3 }
+    },
+    "middleweight": {
+        "name": "middleweight",
+        "appearance": "boxer",
+        "chr": "B",
+        "color": "blue",
+        "hp": 40,
+        "speed": 40,
+        "attacks": [
+            {"damage": 8, "accuracy": 80, "types": ["Mid"]},
+            {"damage": 10, "kb":1, "accuracy": 70, "types": ["Mid"]}
+        ],
+        "ai": { "seekdef": 3 }
+    },
+    "heavyweight": {
+        "name": "heavyweight",
+        "appearance": "boxer",
+        "chr": "B",
+        "color": "magenta",
+        "hp": 80,
+        "speed": 40,
+        "attacks": [
+            {"damage": 8, "kb": 1, "accuracy": 80, "types": ["Mid"]},
+            {"damage": 10, "kb": 1, "accuracy": 80, "types": ["Mid"]},
+            {"damage": 12, "accuracy": 60, "types": ["High"]}
+        ],
+        "ai": { "seekdef": 3 }
     }
 }

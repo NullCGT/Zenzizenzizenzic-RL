@@ -24,10 +24,10 @@
 #include "spawn.h"
 #include "mapgen.h"
 
-void make_aware(struct actor *, struct actor *);
 int check_stealth(struct actor *, struct actor *);
 void increment_regular_values(struct actor *);
 struct action *get_tile_action(struct actor *);
+struct action *ai_decision(struct actor *);
 
 /**
  * @brief Initialize an AI struct.
@@ -44,60 +44,69 @@ struct ai *init_ai(struct actor *actor) {
 }
 
 /**
+ * @brief Make a decision about the current turn;
+ * 
+ * @param actor the actor making the decision
+ * @return struct action* the action to take
+ */
+struct action *ai_decision(struct actor *actor) {
+    struct action *action = NULL;
+    /* Stealth and Visibility */
+    if (!is_visible(actor->x, actor->y)) {
+        if (actor->ai->seekcur)
+            actor->ai->seekcur--;
+    }
+    if (!is_aware(actor, g.player))
+        check_stealth(actor, g.player);
+    action = get_tile_action(actor);
+    if (!action) {
+        struct coord cl;
+        /* AI Decision-Making */
+        if (is_aware(actor, g.player))
+            cl = best_adjacent_tile(actor->x, actor->y, 1, 1, HM_PLAYER);
+        else if (is_guardian(actor)) {
+            cl.x = 0;
+            cl.y = 0;
+        } else
+            cl = best_adjacent_tile(actor->x, actor->y, 1, 1, HM_DOWNSTAIR);
+        if (cl.x == -99 || cl.y == -99) {
+            action = dir_to_action(0, 0);
+        } else {
+            action = dir_to_action(cl.x, cl.y);
+        }
+    }
+    return action;
+}
+
+/**
  * @brief An actor takes a turn if able. If the actor is the player, then
  pass control to the user. Otherwise, make use of ai functionality.
  * 
  * @param actor The actor who will be taking the turn.
  */
 void take_turn(struct actor *actor) {
-    int cost = 100;
+    int cost = TURN_FULL;
     short heatmap_field = heatmaps[HM_PLAYER].field;
     struct action *action = NULL;
 
     if (actor != g.player && !actor->ai)
         return;
     
-    /* Refill energy */
-    actor->energy += 100;
-    if (actor->energy > 0 && actor->energy < 100)
-        actor->energy = 100;
     increment_regular_values(actor);
 
     while (actor->energy > 0) {
         actor->can_tech = 0;
-        if (actor->stance == GRAB) {
-            change_stance(actor, actor->old_stance, 0);
+        if (actor->stance == GRAB || actor->stance == STANCE_STUN) {
+            change_stance(actor, actor->old_stance, actor->stance != STANCE_STUN);
         }
+        actor->combo_counter = 0;
         actor->old_stance = actor->stance;
         if (actor == g.player) {
             render_all();
             /* Player input */
             action = get_action();
         } else {
-            /* Stealth and Visibility */
-            if (!is_visible(actor->x, actor->y)) {
-                if (actor->ai->seekcur)
-                    actor->ai->seekcur--;
-            }
-            if (!is_aware(actor, g.player))
-                check_stealth(actor, g.player);
-            action = get_tile_action(actor);
-            if (!action) {
-                struct coord cl;
-                /* AI Decision-Making */
-                if (is_aware(actor, g.player))
-                    cl = best_adjacent_tile(actor->x, actor->y, 1, 1, HM_PLAYER);
-                else if (is_guardian(actor)) {
-                    cl.x = 0;
-                    cl.y = 0;
-                } else
-                    cl = best_adjacent_tile(actor->x, actor->y, 1, 1, HM_DOWNSTAIR);
-                if (cl.x == -99 || cl.y == -99) {
-                    action = dir_to_action(0, 0);
-                } else {
-                    action = dir_to_action(cl.x, cl.y);
-                }
-            }
+            action = ai_decision(actor);
         }
         if (action)
             cost = execute_action(actor, action);
@@ -142,7 +151,9 @@ struct attack choose_attack(struct actor *aggressor, struct actor *target) {
 }
 
 int is_aware(struct actor *aggressor, struct actor *target) {
-    if (!aggressor->ai)
+    if (aggressor == g.player)
+        return 1;
+    else if (!aggressor->ai)
         return 0;
     else if (target == g.player)
         return aggressor->ai->seekcur;
@@ -153,16 +164,17 @@ int is_aware(struct actor *aggressor, struct actor *target) {
 #define MAX_SPOT_MSG 2
 static const char *spot_msgs[MAX_SPOT_MSG] = { "spots", "notices" };
 
-void make_aware(struct actor *aggressor, struct actor *target) {
-    if (aggressor == g.player && is_visible(aggressor->x, aggressor->y)) {
+void make_aware(struct actor *aggressor, struct actor *target, int silent) {
+    if (!silent && aggressor == g.player && is_visible(aggressor->x, aggressor->y)) {
         logm("%s notices %s.", actor_name(aggressor, NAME_THE | NAME_CAP), 
                               actor_name(target, NAME_A));
     }
     if (aggressor->ai) {
-        logm("%s %s %s%s", actor_name(aggressor, NAME_A | NAME_CAP),
-            spot_msgs[rndmx(MAX_SPOT_MSG)],
-            actor_name(target, NAME_THE),
-            in_danger(g.player) ? "!" : "." );
+        if (!silent)
+            logm("%s %s %s%s", actor_name(aggressor, NAME_A | NAME_CAP),
+                spot_msgs[rndmx(MAX_SPOT_MSG)],
+                actor_name(target, NAME_THE),
+                in_danger(g.player) ? "!" : "." );
         aggressor->ai->seekcur = aggressor->ai->seekdef;
         if (!g.target) g.target = aggressor;
     }
@@ -172,7 +184,7 @@ int check_stealth(struct actor *aggressor, struct actor *target) {
     (void) aggressor;
     if (is_visible(target->x, target->y) && is_visible(aggressor->x, aggressor->y)
         && !rndmx(2))
-        make_aware(aggressor, target);
+        make_aware(aggressor, target, 0);
     return 0;
 }
 
@@ -193,6 +205,9 @@ void increment_regular_values(struct actor *actor) {
             logm("Something comes down the stairs.");
         }
     }
+    actor->energy += TURN_FULL;
+    if (actor->energy > 0 && actor->energy < TURN_FULL)
+        actor->energy = TURN_FULL;
     /* Temporary evasion and accuracy slowly return to zero.  */
     if (actor->temp_accuracy != 0) {
         actor->temp_accuracy < 0 ? actor->temp_accuracy++ : actor->temp_accuracy--;

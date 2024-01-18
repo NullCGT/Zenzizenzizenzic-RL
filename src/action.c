@@ -157,7 +157,7 @@ int move_mon(struct actor* mon, int x, int y) {
             stop_running();
             return 0;
         } else {
-            return 100;
+            return TURN_FULL;
         }
     }
     /* If there is someone there, attack them! */
@@ -184,7 +184,7 @@ int move_mon(struct actor* mon, int x, int y) {
             stop_running();
             return 0;
         } else {
-            return 100;
+            return TURN_FULL;
         }
     }
     /* Perform movement */

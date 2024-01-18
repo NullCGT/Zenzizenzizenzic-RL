@@ -46,10 +46,8 @@ struct attack {
     unsigned char dam;
     unsigned char kb;
     unsigned char accuracy;
-#if 0
     unsigned char stun;
-    unsigned char cost;
-#endif
+    unsigned char recovery;
     /* bitfields */
     unsigned short hitdescs;
 };
@@ -70,6 +68,7 @@ struct actor {
     int speed; /* For creatures, denotes move speed. For items, attack speed. */
     signed char evasion, accuracy;
     signed char temp_evasion, temp_accuracy;
+    unsigned char combo_counter;
     /* Attack list */
     struct attack attacks[MAX_ATTK];
     /* Components */

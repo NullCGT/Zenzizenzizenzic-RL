@@ -250,8 +250,8 @@ struct actor *spawn_actor(struct actor **list, int index, int x, int y) {
     }
 
     actor->invent = NULL;
-    actor->stance = STANCE_CROUCH; /* Initial set, not a change! */
-    actor->old_stance = STANCE_CROUCH;
+    actor->stance = STANCE_STAND; /* Initial set, not a change! */
+    actor->old_stance = STANCE_STAND;
     
     if (actor->equip)
         init_equip(actor);

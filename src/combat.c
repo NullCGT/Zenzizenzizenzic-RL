@@ -9,6 +9,8 @@
  * 
  */
 
+#include <math.h>
+
 #include "actor.h"
 #include "ai.h"
 #include "combat.h"
@@ -35,10 +37,10 @@ int attack_roll(struct actor *, struct actor *, struct attack *);
  * @return int The cost in energy of making the attack.
  */
 int do_attack(struct actor *aggressor, struct actor *target, int multiplier) {
-    struct attack attack = choose_attack(aggressor, target); /* While, we can just use the first attack. */
+    struct attack attack = choose_attack(aggressor, target);
     int damage = attack.dam * multiplier;
-    int result = weak_res(attack.hitdescs, target->stance);
-    int cost = 100;
+    int result = !is_aware(target, aggressor) ? BHIT : weak_res(attack.hitdescs, target->stance);
+    int cost = attack.recovery;
     int color = (target == g.player ? RED : GREEN);
     /* Feedback color */
     if (result)
@@ -60,12 +62,20 @@ int do_attack(struct actor *aggressor, struct actor *target, int multiplier) {
     if (result == BHIT) {
         if (aggressor == g.player)
             g.target = target;
-        logma(color, "%s %s %s! (-%d)", 
+        target->combo_counter++;
+        logma(color, "%s %s %s! x%d Combo!", 
                 actor_name(aggressor, NAME_CAP | NAME_THE),
                 attack.hitdescs & GRAB ? "throws" : "hits",
-                actor_name(target, NAME_THE), damage);
+                actor_name(target, NAME_THE),
+                target->combo_counter);
+        change_stance(target, STANCE_STUN, (target->stance == STANCE_STUN));
+        if (target->combo_counter >= HITSTUN_DETERIORATION)
+            target->energy = -1 * attack.stun / (target->combo_counter - HITSTUN_DETERIORATION + 1);
+        else
+            target->energy = -1 * attack.stun;
     } else if (result == BBLOCK) {
         damage /= 2; /* TEMPORARY */
+        // target->energy = -0.5 * attack.stun;
         logma(color, "%s blocks %s's strike. (-%d)",
                 actor_name(target, NAME_CAP | NAME_THE),
                 actor_name(aggressor, NAME_THE), damage);
@@ -75,9 +85,15 @@ int do_attack(struct actor *aggressor, struct actor *target, int multiplier) {
                 actor_name(aggressor, NAME_THE));
         damage = 0;
     }
+    /* Make them aware */
+    if (!is_aware(target, aggressor))
+        make_aware(target, aggressor, 1);
 
-    /* Apply damage */
-    target->hp -= damage;
+    /* Apply damage and knockback */
+    if  (target->combo_counter > 1)
+        target->hp -= (damage * powf(DAMAGE_SCALING, (target->combo_counter - 1)));
+    else
+        target->hp -= damage;
     if (target == g.player && target->hp <= 0) {
         g.target = aggressor;
         logma(BRIGHT_RED, "%s is KO'd...", actor_name(target, NAME_CAP | NAME_THE));
@@ -92,12 +108,11 @@ int do_attack(struct actor *aggressor, struct actor *target, int multiplier) {
         identify_actor(target, 0);
         remove_actor(target);
         free_actor(target);
-    /* Apply knockback if needed. */
     } else if (target && attack.kb > 0 && result == BHIT) {
         if (target->x ==  aggressor->x && target->y == aggressor->y) {
             /* Thrown items can share a cell with an opponent while knocking
                them back. Why not lean into this with a special state? */
-            target->energy -= 100;
+            target->energy -= TURN_FULL;
             logm("%s is knocked into the air!", actor_name(target, NAME_CAP | NAME_THE));
         } else
             apply_knockback(target, attack.kb, target->x - aggressor->x, target->y - aggressor->y);
@@ -133,14 +148,14 @@ void apply_knockback(struct actor* target, int velocity, int x, int y) {
 
         if (is_blocked(nx, ny)) {
             if (target->can_tech) {
-                logma(target == g.player ? BRIGHT_GREEN : BRIGHT_RED, "%s performs a breakfall againat the %s. Breakfall!", 
+                logma(target == g.player ? BRIGHT_GREEN : BRIGHT_RED, "%s performs a breakfall againat the %s.", 
                             actor_name(target, NAME_THE),
                             g.levmap[nx][ny].pt->name);
-                target->energy += 100;
+                target->energy = TURN_FULL;
             } else {
                 logma(target == g.player ? BRIGHT_RED : BRIGHT_GREEN, "%s bounces off the %s!",
                           actor_name(target, NAME_CAP | NAME_THE), g.levmap[nx][ny].pt->name);
-                target->energy -= 100;
+                target->energy -= TURN_FULL;
                 target->can_tech = 1;
             }
             return;
@@ -156,7 +171,7 @@ void apply_knockback(struct actor* target, int velocity, int x, int y) {
             else
                 logm("%s crashes into %s.", actor_name(target, NAME_THE), 
                      actor_name(mon, NAME_A));
-            mon->energy += 100;
+            mon->energy += TURN_FULL;
             target->energy = 0;
             return;
         }
@@ -177,6 +192,9 @@ void apply_knockback(struct actor* target, int velocity, int x, int y) {
  * tech = 2
  */
 int weak_res(short hitdesc, short stance) {
+    if ((stance & STANCE_STUN)) { /* If stunned, all attacks hit. */
+        return BHIT;
+    }
     if ((hitdesc & GRAB) && (stance & GRAB))
         return BTECH;
     else if (stance & hitdesc)
@@ -198,11 +216,12 @@ int attack_roll(struct actor *aggressor, struct actor *target, struct attack *at
     goal += calculate_accuracy(aggressor, attack);
     goal -= calculate_evasion(target);
 
-    /* An attack against an unaware opponent is an automatic hit. */
-    if (!is_aware(target, aggressor))
+    /* An attack against an unaware or stunned opponent is an automatic hit. */
+    if (!is_aware(target, aggressor) || (target->stance == STANCE_STUN)) {
         goal = 100;
+    }
 
-    return (rndrng(1, 101) < goal);
+    return (rndrng(1, 101) <= goal);
 }
 
 /**
@@ -249,26 +268,30 @@ struct attack *get_active_attack(int index) {
  */
 int change_stance(struct actor *actor, short stance, int silent) {
     int changed = !(stance == actor->stance);
-    switch(stance) {
-        case STANCE_STAND:
-            if (!silent && actor == g.player && changed)
-                logm("%s stands up.", actor_name(actor, NAME_CAP | NAME_THE));
-            break;
-        case STANCE_CROUCH:
-            if (!silent && actor == g.player && changed)
-                logm("%s crouches.", actor_name(actor, NAME_CAP | NAME_THE));
-            break;
-        case STANCE_TECH:
-            if (!silent && actor == g.player && changed)
-                logm("%s prepares to tech a throw.", actor_name(actor, NAME_CAP | NAME_THE));
-            break;
-        case STANCE_STUN:
-            if (!silent)
-                logm("%s is stunnded!", actor_name(actor, NAME_CAP | NAME_THE));
-            break;
-        default:
-            logm_warning("%s shifted to unknown stance %d?", actor_name(actor, NAME_EX), stance);
-            break;
+    if (!silent && actor->stance == STANCE_STUN && changed) {
+        logm("%s is no longer stunned.", actor_name(actor, NAME_CAP | NAME_THE));
+    } else {
+        switch(stance) {
+            case STANCE_STAND:
+                if (!silent && actor == g.player && changed)
+                    logm("%s stands up.", actor_name(actor, NAME_CAP | NAME_THE));
+                break;
+            case STANCE_CROUCH:
+                if (!silent && actor == g.player && changed)
+                    logm("%s crouches.", actor_name(actor, NAME_CAP | NAME_THE));
+                break;
+            case STANCE_TECH:
+                if (!silent && actor == g.player && changed)
+                    logm("%s prepares to tech a throw.", actor_name(actor, NAME_CAP | NAME_THE));
+                break;
+            case STANCE_STUN:
+                if (!silent)
+                    logm("%s is stunnded!", actor_name(actor, NAME_CAP | NAME_THE));
+                break;
+            default:
+                logm_warning("%s shifted to unknown stance %d?", actor_name(actor, NAME_EX), stance);
+                break;
+        }
     }
     if (changed && actor == g.player)
         stop_running();
