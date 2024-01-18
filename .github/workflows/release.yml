@@ -47,7 +47,7 @@ jobs:
 
       - name: Create Package
         run: |
-          zip -rq ${{github.workspace}}/zenzizenzizenzic-${{ runner.os }} ${{github.workspace}}/build/zenzizenzizenzic_ncurses ${{github.workspace}}/build/data/ ${{github.workspace}}/README.md ${{github.workspace}}/LICENSE
+          zip -r ${{github.workspace}}/zenzizenzizenzic-${{ runner.os }} build/zenzizenzizenzic_ncurses build/data/ README.md LICENSE
 
       - name: Upload Release
         uses: softprops/action-gh-release@v1
