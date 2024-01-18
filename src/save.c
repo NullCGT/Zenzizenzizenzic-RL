@@ -81,11 +81,11 @@ void save_game(void) {
     g.turns -= 1;
 
     /* Write the global struct. */
-    fwrite(&g, sizeof(struct global), 1, fp);
+    (void) fwrite(&g, sizeof(struct global), 1, fp);
     /* Write level map */
     for (int y = 0; y < MAPH; y++) {
         for (int x = 0; x < MAPW; x++) {
-            fwrite(&(g.levmap[x][y].pt->id), sizeof(int), 1, fp);
+            (void) fwrite(&(g.levmap[x][y].pt->id), sizeof(int), 1, fp);
         }
     }
     /* Write the monster dictionary */
@@ -100,7 +100,7 @@ void save_game(void) {
         actor_count++;
         cur_actor = cur_actor->next;
     }
-    fwrite(&actor_count, sizeof(int), 1, fp);
+    (void) fwrite(&actor_count, sizeof(int), 1, fp);
     /* Write actors */
     cur_actor = g.player;
     while (cur_actor != NULL) {
@@ -132,15 +132,15 @@ void save_actor(FILE *fp, struct actor *actor) {
     actor->saved = 1;
 
     /* Write the actor, then write each of the actor's components. */
-    fwrite(actor, sizeof(struct actor), 1, fp);
+    (void) fwrite(actor, sizeof(struct actor), 1, fp);
     if (actor->name) {
-        fwrite(actor->name, sizeof(struct name), 1, fp);
+        (void) fwrite(actor->name, sizeof(struct name), 1, fp);
     }
     if (actor->ai) {
-        fwrite(actor->ai, sizeof(struct ai), 1, fp);
+        (void) fwrite(actor->ai, sizeof(struct ai), 1, fp);
     }
     if (actor->equip) {
-        fwrite(actor->equip, sizeof(struct equip), 1, fp);
+        (void) fwrite(actor->equip, sizeof(struct equip), 1, fp);
     }
     if (actor->invent) {
         cur_item = actor->invent;
@@ -148,7 +148,7 @@ void save_actor(FILE *fp, struct actor *actor) {
             cur_item = cur_item->next;
             item_count++;
         }
-        fwrite(&item_count, sizeof(int), 1, fp);
+        (void) fwrite(&item_count, sizeof(int), 1, fp);
         cur_item = actor->invent;
         while (cur_item != NULL) {
             save_actor(fp, cur_item);
@@ -156,7 +156,7 @@ void save_actor(FILE *fp, struct actor *actor) {
         }
     }
     if (actor->item) {
-        fwrite(actor->item, sizeof(struct item), 1, fp);
+        (void) fwrite(actor->item, sizeof(struct item), 1, fp);
     }
 }
 
