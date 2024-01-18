@@ -192,7 +192,6 @@ void apply_knockback(struct actor* target, int velocity, int x, int y) {
  * tech = 2
  */
 int weak_res(short hitdesc, short stance) {
-    logm("%d, %d", hitdesc, stance);
     if ((stance & STANCE_STUN)) { /* If stunned, all attacks hit. */
         logm("STUN");
         return BHIT;
