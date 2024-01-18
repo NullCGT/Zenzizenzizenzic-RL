@@ -1,7 +1,7 @@
 {
     "name": "zenzizenzizenzic",
     "version": "1.0.0",
-    "description": "A traditional roguelike about fighting games.",
+    "description": "A roguelike about fighting games.",
     "dependencies": [
         "cjson",
         "ncurses"

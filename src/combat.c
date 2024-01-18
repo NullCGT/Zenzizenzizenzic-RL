@@ -97,7 +97,7 @@ int do_attack(struct actor *aggressor, struct actor *target, int multiplier) {
     if (target == g.player && target->hp <= 0) {
         g.target = aggressor;
         logma(BRIGHT_RED, "%s is KO'd...", actor_name(target, NAME_CAP | NAME_THE));
-        if ((g.explore || g.debug) && !yn_prompt("Stay knocked out?", 0)) {
+        if ((g.practice || g.debug) && !yn_prompt("Stay knocked out?", 0)) {
             logm("%s randomly regains consciousness.", actor_name(target, NAME_CAP | NAME_THE));
             g.player->hp = g.player->hpmax;
             return cost;

@@ -55,7 +55,7 @@ typedef struct global {
     int goal_x, goal_y; /* Traveling */
     /* Persistent flags */
     unsigned int debug : 1;
-    unsigned int explore : 1;
+    unsigned int practice : 1;
     /* 5 free bits */
 } global;
 

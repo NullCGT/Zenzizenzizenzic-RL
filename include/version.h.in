@@ -11,3 +11,5 @@
 #define RELEASE_TYPE "${RELEASE_TYPE}"
 /* Report Repo */
 #define REPO_URL "https://github.com/NullCGT/Zenzizenzizenzic-RL"
+/* Short Description */
+#define SHORT_DESC "${PROJECT_DESCRIPTION}"

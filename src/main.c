@@ -16,6 +16,7 @@
 #include <execinfo.h>
 #include <unistd.h>
 #include <string.h>
+#include <argp.h>
 
 #include "ai.h"
 #include "invent.h"
@@ -35,7 +36,7 @@
 void handle_exit(void);
 void handle_sigwinch(int);
 void new_game(void);
-void parse_args(int, const char *[]);
+error_t parse_args(int, char *, struct argp_state *);
 
 /**
  * @brief Called whenever the program exits. Cleans up the screen and
@@ -105,8 +106,8 @@ void handle_sigsegv(int sig) {
 void new_game(void) {
     json_to_monster_list("data/creature/creatures.json");
     json_to_item_list("data/item/weapons.json");
-    if (f.mode_explore || g.debug) {
-        logm_warning("The high score list is disabled due to the game mode.");
+    if (g.practice || g.debug) {
+        logm("The high score list is disabled due to the game mode.");
     }
     /* Spawn player */
     if (g.player == NULL) {
@@ -124,22 +125,51 @@ void new_game(void) {
     logma(CYAN, "Welcome, Team %s! Let's rock!", g.userbuf);
 }
 
-/**
- * @brief Parse the given arguments
- * 
- * @param argc Number of arguments
- * @param argv Argument array
- */
-void parse_args(int argc, const char *argv[]) {
-    for (int i = 1; i < argc; i++) {
-        if (!strncmp(argv[i], "-X", 2)) {
-            g.explore = 1;
-        } else if (!strncmp(argv[i], "-D", 2)) {
+static char doc[] = SHORT_DESC;
+static struct argp_option options[] = {
+    { "team",     't', "TEAMNAME", 0, "Set a default name for the player team.", 0},
+    { "version",  'v', 0, 0, "Display version information.", 0},
+    { "debug",    'd', 0, 0, "Activates debug mode. Debug mode enables debug commands and makes losing optional. Disables the high score list.", 0},
+    { "practice", 'p', 0, 0, "Activates practice mode. Practice mode makes losing optional. Disables the high score list.", 0},
+    {0}
+};
+
+struct arguments
+{
+    char *args[2];
+    char *team;
+    int debug, practice;
+};
+static struct argp argp = { options, parse_args, 0, doc, 0, 0, 0 };
+
+error_t parse_args(int key, char *arg, struct argp_state *state) {
+    struct arguments *arguments = state->input;
+
+    switch (key) {
+        case 'd':
             g.debug = 1;
-        } else if (!strncmp(argv[i], "-u", 2)) {
-            snprintf(g.userbuf, sizeof(g.userbuf), "%s", argv[i] + 2);
-        }
+            break;
+        case 'p':
+            g.practice = 1;
+            break;
+        case 'v':
+            printf("v%d.%d.%d-%s\n", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, RELEASE_TYPE);
+            exit(0);
+            break;
+        case 't':
+            snprintf(g.userbuf, sizeof(g.userbuf), "%s", arg);
+            break;
+        case ARGP_KEY_ARG:
+            if (state->arg_num >= 5)
+                argp_usage(state);
+            arguments->args[state->arg_num] = arg;
+            break;
+        default:
+            return ARGP_ERR_UNKNOWN;
+            exit(1);
+            break;
     }
+    return 0;
 }
 
 /**
@@ -149,19 +179,27 @@ void parse_args(int argc, const char *argv[]) {
  * @param argv Argument array
  * @return int 0
  */
-int main(int argc, const char *argv[]) {
+int main(int argc, char **argv) {
     struct actor *cur_actor;
     char buf[MAX_USERSZ + 4] = { '\0' };
+
+    // Parse args
+    struct arguments arguments;
+    arguments.debug = 0;
+    arguments.practice = 0;
+    arguments.team = '\0';
+    argp_parse(&argp, argc, argv, 0, 0, &arguments);
+    if (g.userbuf[0] == '\0')
+        getlogin_r(g.userbuf, sizeof(g.userbuf));
+    if (g.userbuf[0] == ' ')
+        snprintf(g.userbuf, sizeof(g.userbuf), "Lion");
+    if (g.userbuf[0] > 'Z')
+        g.userbuf[0] = g.userbuf[0] - 32;
 
     /* handle exits and resizes */
     atexit(handle_exit);
     signal(SIGWINCH, handle_sigwinch);
     signal(SIGSEGV, handle_sigsegv);
-
-    // Parse args
-    parse_args(argc, argv);
-    if (g.userbuf[0] == '\0')
-        getlogin_r(g.userbuf, sizeof(g.userbuf));
     
     /* Build savefile name */
     snprintf(buf, sizeof(buf), "%s.sav", g.userbuf);

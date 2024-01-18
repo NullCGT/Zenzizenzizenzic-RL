@@ -7,12 +7,17 @@ A traditional roguelike with mechanics that mimic those found in fighting games.
 
 ![Screenshot](/img/screenshot.png)
 
-## Command Line Options
-| Syntax      | Example | Purpose           |
-| ------------|---------|-------------------|
-| -u\[User\]  | -uBob   | Specify the user.
-| -D          | -D      | Enter debug mode. In debug mode, the high score list is disabled, but the user has access to special debug functionality.
-| -X          | -X      | Enter explore mode. In explore mode, the high scorel list is disabled, but the user can elect not to die.
+## Combat Basics
+
+An attack can be one or more of four types: Low, Mid, High, or Grab. Conversely, a character can be in one of three stances: Crouch, Stand, or Tech. The way an attack interacts with a target depends on the stance that the target is in, as shown in the following table.
+
+|          | Low   | Mid   | High  | Tech  |
+|----------|-------|-------|-------|-------|
+|**Crouch**| Block | Block | Hit   | Hit   |
+|**Stand**| Hit   | Block | Block | Hit   |
+|**Tech** | Hit   | Hit   | Hit   | Block |
+
+If an attack hits, the target takes full damage and enters a stunned state. If an attack is blocked, the target takes only partial damage and is not stunned.
 
 ## Building from Source
 Zenzizenzizenzic is built using CMake.
@@ -25,18 +30,6 @@ cmake --build build
 ```
 The game binary and necessary data files will appear in the newly-created build
 directory.
-
-## Combat Basics
-
-An attack can be one or more of four types: Low, Mid, High, or Grab. Conversely, a character can be in one of three stances: Crouch, Stand, or Tech. The way an attack interacts with a target depends on the stance that the target is in, as shown in the following table.
-
-|          | Low   | Mid   | High  | Tech  |
-|----------|-------|-------|-------|-------|
-|**Crouch**| Block | Block | Hit   | Hit   |
-|**Stand**| Hit   | Block | Block | Hit   |
-|**Tech** | Hit   | Hit   | Hit   | Block |
-
-If an attack hits, the target takes full damage and enters a stunned state. If an attack is blocked, the target takes only partial damage and is not stunned.
 
 ## FAQ
 
