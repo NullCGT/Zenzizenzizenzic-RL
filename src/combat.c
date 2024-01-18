@@ -250,6 +250,7 @@ int calculate_accuracy(struct actor *actor, struct attack *attack) {
 /**
  * @brief Get the active attack
  * 
+ * @param actor the actor whose attacks we are indexing
  * @param index the index of the attack to get
  * @return struct attack* The pointer to the active attack.
  */
