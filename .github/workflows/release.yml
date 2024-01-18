@@ -6,11 +6,13 @@ on:
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Debug
+  BUILD_TYPE: Release
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Check out repository code.
         uses: actions/checkout@v3
@@ -47,24 +49,7 @@ jobs:
         run: |
           zip -rq ${{github.workspace}}/zenzizenzizenzic-${{ runner.os }} ${{github.workspace}}/build/zenzizenzizenzic_ncurses ${{github.workspace}}/build/data/ ${{github.workspace}}/README.md ${{github.workspace}}/LICENSE
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Release
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-          
-      - name: Upload Release Asset
-        id: upload-release-asset 
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./zenzizenzizenzic-${{ runner.os }}.zip
-          asset_name: zenzizenzizenzic-${{ runner.os }}.zip
-          asset_content_type: application/zip
+          files: ${{github.workspace}}/zenzizenzizenzic-${{ runner.os }}=
