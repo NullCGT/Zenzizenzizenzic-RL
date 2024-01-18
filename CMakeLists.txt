@@ -77,7 +77,6 @@ set (HEADERS
     include/render.h
     include/save.h
     include/spawn.h
-    include/tactics.h
     include/tile.h
     include/version.h
     include/wfc.h
