@@ -1,7 +1,6 @@
 # Zenzizenzizenzic
 
 ![Release Status](https://github.com/NullCGT/Zenzizenzizenzic-RL/actions/workflows/cmake-single-platform.yml/badge.svg)
-![Release Status](https://github.com/NullCGT/Zenzizenzizenzic-RL/actions/workflows/release.yml/badge.svg?branch=main)
 
 A traditional roguelike with mechanics that mimic those found in fighting games.
 
@@ -25,17 +24,17 @@ This is a console-based roguelike written in plain C. A moldering potato can pro
 
 - Ncurses
 
+To download the game, find the latest [release](https://github.com/NullCGT/Zenzizenzizenzic-RL/releases). Download the version that corresponds to your operationg system and unzip it to a new folder. Launch the game in the build directory.
+
 ## Building from Source
-Zenzizenzizenzic is built using CMake.
+Zenzizenzizenzic is built using CMake. 
 
 In order to compile the game for local testing, run the following commands:
 ```
-mkdir build
 cmake --preset=dev
 cmake --build build
 ```
-The game binary and necessary data files will appear in the newly-created build
-directory.
+The game binary and necessary data files will appear in the newly-created build directory. In order to compile the game with release-level compiler optimizations, replace "dev" with "release." Note that this will disable most compiler warnings and debug hooks.
 
 ## FAQ
 
