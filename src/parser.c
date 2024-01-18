@@ -144,8 +144,8 @@ void json_to_monster_list(const char *fname) {
         g.monsters[g.total_monsters] = new_actor;
         g.total_monsters++;
     }
-    //cJSON_Delete(all_json);
     cJSON_Delete(actor_json);
+    cJSON_Delete(all_json);
 }
 
 void json_to_item_list(const char *fname) {
