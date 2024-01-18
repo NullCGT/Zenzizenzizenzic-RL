@@ -656,21 +656,19 @@ void draw_lifebars(void) {
     werase(bars_win_p);
     box(bars_win_p, 0, 0);
     /* Health Bar */
-    wcolor_on(bars_win_p, BRIGHT_RED);
+    wcolor_on(bars_win_p, BRIGHT_GREEN);
     render_bar(bars_win_p, g.player->hp, g.player->hpmax, term.msg_w / 2 + 4, 1,
                     term.msg_w / 2 - 5, 0);
     if (g.target)
         render_bar(bars_win_p, g.target->hp, g.target->hpmax, 1, 1,
                     term.msg_w / 2 - 6, 1);       
-    wcolor_off(bars_win_p, BRIGHT_RED);
+    wcolor_off(bars_win_p, BRIGHT_GREEN);
     /* Center Text */
     wcolor_on(bars_win_p, BRIGHT_YELLOW);
     print_stance(g.player, bars_win_p, 2, term.msg_w / 2 - 3);
     wcolor_off(bars_win_p, BRIGHT_YELLOW);
-    wcolor_on(bars_win_p, BRIGHT_GREEN);
     snprintf(buf, sizeof(buf), "%d", g.player->energy);
     mvwprintw(bars_win_p, 1, term.msg_w / 2 - 1, "%s", buf);
-    wcolor_off(bars_win_p, BRIGHT_GREEN);
     /* Energy Bar */
     wcolor_on(bars_win_p, BRIGHT_BLUE);
     render_bar(bars_win_p, g.player->hp, g.player->hpmax, term.msg_w / 2 + 4, 2,
