@@ -217,7 +217,7 @@ void load_game(const char *fname) {
         return;
     }
     /* Read the global struct */
-    fread(&g, sizeof(struct global), 1, fp);
+    (void) fread(&g, sizeof(struct global), 1, fp);
     /* Clean up message pointers. We could save the message log fairly easily,
        but it would take up a lot of space, so we don't. */
     g.msg_list = NULL;
@@ -225,7 +225,7 @@ void load_game(const char *fname) {
     /* Read level map */
     for (int y = 0; y < MAPH; y++) {
         for (int x = 0; x < MAPW; x++) {
-            fread(&tile_id, sizeof(int), 1, fp);
+            (void) fread(&tile_id, sizeof(int), 1, fp);
             g.levmap[x][y].pt = &permtiles[tile_id];
             g.levmap[x][y].actor = NULL;
             g.levmap[x][y].item_actor = NULL;
@@ -239,7 +239,7 @@ void load_game(const char *fname) {
         g.items[i] = load_actor(fp, g.items[i]);
     }
     /* Read actors */
-    fread(&actor_count, sizeof(int), 1, fp);
+    (void) fread(&actor_count, sizeof(int), 1, fp);
     cur_actor = g.player;
     addr = &g.player;
     for (int i = 0; i < actor_count; i++) {
@@ -273,23 +273,23 @@ struct actor *load_actor(FILE *fp, struct actor *actor) {
     struct actor **addr;
 
     actor = (struct actor *) malloc(sizeof(struct actor));
-    fread(actor, sizeof(struct actor), 1, fp);
+    (void) fread(actor, sizeof(struct actor), 1, fp);
     if (actor->name) {
         actor->name = (struct name *) malloc(sizeof(struct name));
-        fread(actor->name, sizeof(struct name), 1, fp);
+        (void) fread(actor->name, sizeof(struct name), 1, fp);
     }
     if (actor->ai) {
         actor->ai = (struct ai *) malloc(sizeof(struct ai));
-        fread(actor->ai, sizeof(struct ai), 1, fp);
+        (void) fread(actor->ai, sizeof(struct ai), 1, fp);
         actor->ai->parent = actor;
     }
     if (actor->equip) {
         actor->equip = (struct equip *) malloc(sizeof(struct equip));
-        fread(actor->equip, sizeof(struct equip), 1, fp);
+        (void) fread(actor->equip, sizeof(struct equip), 1, fp);
         actor->equip->parent = actor;
     }
     if (actor->invent) {
-        fread(&item_count, sizeof(int), 1, fp);
+        (void) fread(&item_count, sizeof(int), 1, fp);
         cur_item = actor->invent;
         addr = &(actor->invent);
         for (int i = 0; i < item_count; i++) {
@@ -305,7 +305,7 @@ struct actor *load_actor(FILE *fp, struct actor *actor) {
     }
     if (actor->item) {
         actor->item = (struct item *) malloc(sizeof(struct item));
-        fread(actor->item, sizeof(struct item), 1, fp);
+        (void) fread(actor->item, sizeof(struct item), 1, fp);
         actor->item->parent = actor;
     }
     actor->saved = 0;

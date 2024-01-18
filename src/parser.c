@@ -57,7 +57,7 @@ struct cJSON* json_from_file(const char *fname) {
     len = ftell(fp);
     fseek(fp, 0, SEEK_SET);
     buf = (char *) malloc(len + 1);
-    fread(buf, 1, len, fp);
+    (void) fread(buf, 1, len, fp);
     buf[len] = '\0';
     fclose(fp);
     /* Parse the file into JSON. */
