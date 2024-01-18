@@ -8,7 +8,7 @@ set(ZZZZZZ_DESKTOP_DIR /usr/share/applications)
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 1)
 SET(VERSION_PATCH 0)
-SET(RELEASE_TYPE "alpha")
+SET(RELEASE_STATE "alpha")
 
 # Generate files
 configure_file (
@@ -30,15 +30,64 @@ project(${PROJECT_NAME} VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATC
 ##########################Compile##########################
 # Find required packages
 set(CURSES_NEED_WIDE TRUE)
+set(CURSES_NEED_NCURSES TRUE)
 find_package(Curses REQUIRED)
 find_package(cJSON REQUIRED)
 
-#TODO: I know globbing c files is bad practice, but when we're this early in development, it's just plain easier.
-file(GLOB SRCS "src/*.c")
-add_executable(${PROJECT_NAME} ${SRCS} windows/curses/windows.c windows/curses/menu.c)
-#TODO: Inclusion directories in this way is also considered bad practice.
-target_include_directories(${PROJECT_NAME} PUBLIC include ${CJSON_INCLUDE_DIR} ${CURSES_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PUBLIC ${CJSON_LIBRARIES} ${CURSES_LIBRARIES} -lpanel)
+# Source files
+set (SOURCES
+    src/action.c
+    src/actor.c
+    src/ai.c
+    src/combat.c
+    src/fov.c
+    src/gameover.c
+    src/invent.c
+    src/main.c
+    src/map.c
+    src/mapgen.c
+    src/message.c
+    src/parser.c
+    src/pqueue.c
+    src/random.c
+    src/register.c
+    src/render.c
+    src/save.c
+    src/spawn.c
+    src/tile.c
+    windows/curses/windows.c
+    windows/curses/menu.c)
+set (HEADERS
+    include/action.h
+    include/actor.h
+    include/ai.h
+    include/color.h
+    include/combat.h
+    include/fov.h
+    include/gameover.h
+    include/invent.h
+    include/map.h
+    include/mapgen.h
+    include/menu.h
+    include/message.h
+    include/parser.h
+    include/pqueue.h
+    include/random.h
+    include/register.h
+    include/render.h
+    include/save.h
+    include/spawn.h
+    include/tactics.h
+    include/tile.h
+    include/version.h
+    include/wfc.h
+    include/windows.h)
+set (INCLUDE_DIR include)
+
+# Create executable
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIR} ${CJSON_INCLUDE_DIR} ${CURSES_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${CJSON_LIBRARIES} -lpanelw ${CURSES_LIBRARIES})
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 # Copy data files
@@ -48,7 +97,8 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
                        ${CMAKE_SOURCE_DIR}/data $<TARGET_FILE_DIR:${PROJECT_NAME}>/data
                     COMMENT "Copying data folder to output dir.")
 
-message(STATUS "Configuring CMake for ${PROJECT_NAME} v${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}-${RELEASE_TYPE}")
+message(STATUS "Configuring CMake for ${PROJECT_NAME} v${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}-${RELEASE_STATE}")
+message(STATUS "Release Type: ${CMAKE_BUILD_TYPE}")
 ##########################Install##########################
 install(TARGETS ${PROJECT_NAME} DESTINATION .)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/data/ DESTINATION data)

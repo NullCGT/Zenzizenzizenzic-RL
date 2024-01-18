@@ -19,6 +19,12 @@ An attack can be one or more of four types: Low, Mid, High, or Grab. Conversely,
 
 If an attack hits, the target takes full damage and enters a stunned state. If an attack is blocked, the target takes only partial damage and is not stunned.
 
+## System Requirements
+
+This is a console-based roguelike written in plain C. A moldering potato can probably run this game. The potato, however, must be equipped with the following:
+
+- Ncurses
+
 ## Building from Source
 Zenzizenzizenzic is built using CMake.
 
@@ -37,12 +43,6 @@ directory.
 
 While both the win and lose state are reachable, the game is still very far from what
 I would consider playable.
-
-### Can My Computer Run It?
-This is a console-based roguelike written in plain C. A potato can probably run this game.
-
-In all seriousness, your computer can almost certainly run this. At worst, using
-autoexplore might eat up some RAM in a low memory environment.
 
 ### Why C?
 

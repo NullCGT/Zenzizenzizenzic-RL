@@ -7,9 +7,13 @@
 #define VERSION_MINOR ${VERSION_MINOR}
 /* 0.0.x */
 #define VERSION_PATCH ${VERSION_PATCH}
+/* Alpha, Beta, Release */
+#define RELEASE_STATE "${RELEASE_STATE}"
 /* Release, Debug, Test, etc. */
-#define RELEASE_TYPE "${RELEASE_TYPE}"
-/* Report Repo */
-#define REPO_URL "https://github.com/NullCGT/Zenzizenzizenzic-RL"
+#define RELEASE_TYPE "${CMAKE_BUILD_TYPE}"
 /* Short Description */
 #define SHORT_DESC "${PROJECT_DESCRIPTION}"
+/* Author */
+#define AUTHOR "${PROJECT_VENDOR}"
+/* Report Repo */
+#define REPO_URL "https://github.com/NullCGT/Zenzizenzizenzic-RL"

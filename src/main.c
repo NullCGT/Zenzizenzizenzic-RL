@@ -153,7 +153,7 @@ error_t parse_args(int key, char *arg, struct argp_state *state) {
             g.practice = 1;
             break;
         case 'v':
-            printf("v%d.%d.%d-%s\n", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, RELEASE_TYPE);
+            printf("v%d.%d.%d-%s (%s)\n", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, RELEASE_STATE, RELEASE_TYPE);
             exit(0);
             break;
         case 't':

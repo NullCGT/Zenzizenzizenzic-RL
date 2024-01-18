@@ -87,7 +87,7 @@ void title_screen(void) {
     box(background, 0, 0);
 
     snprintf(buf, sizeof(buf), "Zenzizenzizenzic v%d.%d.%d-%s", 
-             VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, RELEASE_TYPE);
+             VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, RELEASE_STATE);
     selector = menu_new(buf, 1, 1, 35, 8);
 
     menu_add_item(selector, 'p', "Play");
