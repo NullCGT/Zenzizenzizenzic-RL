@@ -1,4 +1,4 @@
-name: Create Release
+name: Release
 on:
   push:
     tags:
@@ -24,9 +24,23 @@ jobs:
           configurePreset: 'release'
           buildPreset: 'release'
 
+      - name: Configure CMake
+        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+        run: cmake --preset=release -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+    
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+    
+      - name: Test
+        working-directory: ${{github.workspace}}/build
+        # Execute tests defined by the CMake configuration.
+        # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+        run: ctest -C ${{env.BUILD_TYPE}}
+
       - name: Create Package
         run: |
-          zip -rq zenzizenzizenzic-${{ runner.os }} build/zenzizenzizenzic_ncurses build/data/ README.md
+          zip -rq ${{github.workspace}}/zenzizenzizenzic-${{ runner.os }} ${{github.workspace}}/build/zenzizenzizenzic_ncurses ${{github.workspace}}/build/data/ ${{github.workspace}}/README.md ${{github.workspace}}/LICENSE
 
       - name: Create Release
         id: create_release
@@ -38,6 +52,7 @@ jobs:
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
+          
       - name: Upload Release Asset
         id: upload-release-asset 
         uses: actions/upload-release-asset@v1
