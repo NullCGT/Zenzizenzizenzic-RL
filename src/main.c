@@ -44,17 +44,26 @@ error_t parse_args(int, char *, struct argp_state *);
  * 
  */
 void handle_exit(void) {
-    int freed;
+    int freed, i;
+    cleanup_screen();
     if (g.debug)
         printf("Freeing message list...\n");
     freed = free_message_list(g.msg_list);
     if (g.debug) {
         printf("Freed %d messages.\n", freed);
-        printf("Freeing actor list...\n");
+        printf("Freeing actors on map...\n");
     }
     freed = free_actor_list(g.player);
-    if (g.debug)
+    if (g.debug) {
         printf("Freed %d actors.\n", freed);
+        printf("Freeing creature and item arrays...\n");
+    }
+    for (i = 0; i < g.total_monsters; i++) {
+        free_actor(g.monsters[i]);
+    }
+    for (i = 0; i < g.total_items; i++) {
+        free_actor(g.items[i]);
+    }
     if (term.saved_locale != NULL) {
         if (g.debug) printf("Restoring locale...\n");
         setlocale (LC_ALL, term.saved_locale);
@@ -74,7 +83,6 @@ void handle_sigwinch(int sig) {
     (void) sig;
     if (g.turns)
         save_game();
-    cleanup_screen();
     exit(0);
     return;
 }
@@ -104,11 +112,13 @@ void handle_sigsegv(int sig) {
  * 
  */
 void new_game(void) {
-    json_to_monster_list("data/creature/characters.json");
-    json_to_monster_list("data/creature/boxers.json");
-    json_to_monster_list("data/creature/employees.json");
-    json_to_monster_list("data/creature/debug.json");
-    json_to_item_list("data/item/weapons.json");
+    /* Parse creatures */
+    json_to_actor_array("data/creature/characters.json", &g.total_monsters, g.monsters);
+    json_to_actor_array("data/creature/boxers.json", &g.total_monsters, g.monsters);
+    json_to_actor_array("data/creature/employees.json", &g.total_monsters, g.monsters);
+    json_to_actor_array("data/creature/debug.json", &g.total_monsters, g.monsters);
+    /* Parse items */
+    json_to_actor_array("data/item/weapons.json", &g.total_items, g.items);
     if (g.practice || g.debug) {
         logm("The high score list is disabled due to the game mode.");
     }
@@ -231,7 +241,6 @@ int main(int argc, char **argv) {
                 cur_actor = g.player;
         }
     }
-    cleanup_screen();
     exit(0);
     return 0;
 }

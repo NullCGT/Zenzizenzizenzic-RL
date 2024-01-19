@@ -24,16 +24,15 @@
 /* Func Proto */
 void setup_term_dimensions(int, int, int, int);
 
-#define MAX_MONSTERS 200
-#define MAX_ITEMS 200
+#define MAX_ACTORS 200 /* Ridin' High! Monsters and items are counted seperately. */
 
 /* Persistent data which is saved and loaded. */
 typedef struct global {
     char userbuf[MAX_USERSZ];
     struct tile levmap[MAPW][MAPH];
     int heatmap[NUM_HEATMAPS][MAPW][MAPH];
-    struct actor *monsters[MAX_MONSTERS];
-    struct actor *items[MAX_ITEMS];
+    struct actor *monsters[MAX_ACTORS];
+    struct actor *items[MAX_ACTORS];
     struct actor *player; /* Assume player is first NPC */
     struct actor *target;
     struct actor *active_attacker;

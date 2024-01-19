@@ -36,7 +36,6 @@ int save_exit(void) {
     if (!yn_prompt("Save and exit?", 0))
         return 0;
     save_game();
-    cleanup_screen();
     exit(0);
     return 0;
 }

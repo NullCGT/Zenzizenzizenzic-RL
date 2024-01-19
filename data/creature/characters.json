@@ -1,18 +1,24 @@
 {
-    "Zenzi": {
-        "name": "Zenzi",
-        "lv": 1,
-        "chr": "@",
-        "color": "white",
-        "hp": 40,
-        "speed": 40,
-        "unique": 1,
-        "attacks": [
-            { "damage": 6, "stun": 40, "accuracy": 70, "types": ["Low"] },
-            { "damage": 8, "stun": 80, "accuracy": 95, "types": ["Mid"] },
-            { "damage": 12, "stun": 160, "recovery": 80, "accuracy": 50, "kb": 1, "types": ["High"] },
-            { "damage": 6, "stun": 80, "kb": 2, "accuracy": 70, "types": ["Grab"] }
-        ],
-        "equip" : {}
+    "shuffle": {
+        "color": 0,
+        "appearance": 0
+    }, 
+    "actors" :{
+        "Zenzi": {
+            "name": "Zenzi",
+            "lv": 1,
+            "chr": "@",
+            "color": "yellow",
+            "hp": 40,
+            "speed": 40,
+            "unique": 1,
+            "attacks": [
+                { "damage": 6, "stun": 40, "accuracy": 70, "types": ["Low"] },
+                { "damage": 8, "stun": 80, "accuracy": 95, "types": ["Mid"] },
+                { "damage": 12, "stun": 160, "recovery": 80, "accuracy": 50, "kb": 1, "types": ["High"] },
+                { "damage": 6, "stun": 80, "kb": 2, "accuracy": 70, "types": ["Grab"] }
+            ],
+            "equip" : {}
+        }
     }
 }

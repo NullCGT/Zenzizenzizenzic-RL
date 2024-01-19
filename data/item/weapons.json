@@ -1,34 +1,40 @@
 {
-    "knife": {
-        "name": "combat knife",
-        "lv": 0,
-        "appearance": "knife",
-        "chr": "/",
-        "color": "white",
-        "hp": 4,
-        "speed": 50,
-        "attacks": [
-            { "damage": 5, "kb": 0, "accuracy": 70, "types": ["Mid"] }
-        ],
-        "item": {
-            "pref_slot": "weapon"
-        },
-        "description": "A combat knife. Standard issue for somebody."
+    "shuffle": {
+        "color": 0,
+        "appearance": 0
     },
-    "pipe": {
-        "name": "lead pipe",
-        "lv": 0,
-        "appearance": "pipe",
-        "chr": "/",
-        "color": "cyan",
-        "hp": 10,
-        "speed": 100,
-        "attacks": [
-            { "damage": 12, "kb": 1, "accuracy": 80, "types": ["High"] }
-        ],
-        "item": {
-            "pref_slot": "weapon"
+    "actors": {
+        "knife": {
+            "name": "combat knife",
+            "lv": 0,
+            "appearance": "knife",
+            "chr": "/",
+            "color": "white",
+            "hp": 4,
+            "speed": 50,
+            "attacks": [
+                { "damage": 5, "kb": 0, "accuracy": 70, "types": ["Mid"] }
+            ],
+            "item": {
+                "pref_slot": "weapon"
+            },
+            "description": "A combat knife. Standard issue for somebody."
         },
-        "description": "A trusty pipe. Polaris really shouldn't leave these lying around."
+        "pipe": {
+            "name": "lead pipe",
+            "lv": 0,
+            "appearance": "pipe",
+            "chr": "/",
+            "color": "cyan",
+            "hp": 10,
+            "speed": 100,
+            "attacks": [
+                { "damage": 12, "kb": 1, "accuracy": 80, "types": ["High"] }
+            ],
+            "item": {
+                "pref_slot": "weapon"
+            },
+            "description": "A trusty pipe. Polaris really shouldn't leave these lying around."
+        }
     }
 }

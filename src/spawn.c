@@ -116,7 +116,7 @@ struct actor *spawn_named_actor(const char *name, int x, int y) {
     struct actor *actor = NULL;
     int i = 0;
 
-    for (int j = 0; j < MAX_MONSTERS; j++) {
+    for (int j = 0; j < MAX_ACTORS; j++) {
         if (!g.monsters[j]) break;
         if (!strcmp(actor_name(g.monsters[j], NAME_EX), name))
             actor = g.monsters[j];

@@ -1,18 +1,24 @@
 {
-    "flunky": {
-        "name": "flunky",
-        "lv": 1,
-        "appearance": "exhausted employee",
-        "chr": "@",
-        "color": "green",
-        "hp": 12,
-        "speed": 40,
-        "attacks": [
-            { "damage": 4, "accuracy": 30, "types": ["Low"] }
-        ],
-        "ai": {
-            "seekdef": 5
-        },
-        "equip": {}
+    "shuffle": {
+        "color": 1,
+        "appearance": 0
+    },
+    "actors": {
+        "flunky": {
+            "name": "flunky",
+            "lv": 1,
+            "appearance": "exhausted employee",
+            "chr": "@",
+            "color": "green",
+            "hp": 12,
+            "speed": 40,
+            "attacks": [
+                { "damage": 4, "accuracy": 30, "types": ["Low"] }
+            ],
+            "ai": {
+                "seekdef": 5
+            },
+            "equip": {}
+        }
     }
 }

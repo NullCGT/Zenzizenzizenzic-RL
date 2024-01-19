@@ -115,7 +115,6 @@ void title_screen(void) {
             case 'q':
                 menu_destroy(selector);
                 cleanup_win(background_container);
-                cleanup_screen();
                 exit(0);
         }
     }

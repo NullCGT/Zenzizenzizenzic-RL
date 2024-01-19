@@ -26,6 +26,7 @@
 #include "spawn.h"
 
 struct cJSON* json_from_file(const char *);
+void shuffle_attributes(struct actor **, int, int, int, int);
 struct actor *actor_from_json(cJSON *);
 struct ai *ai_from_json(struct ai *, cJSON *);
 struct item *item_from_json(struct item *, cJSON *);
@@ -122,55 +123,83 @@ struct actor *actor_from_json(cJSON *actor_json) {
     return actor;
 }
 
-void json_to_monster_list(const char *fname) {
-    // comb through every file in the folder via looking through the master file
+/**
+ * @brief parse a json file into an array of actors
+ * 
+ * @param fname the file to parse
+ * @param total_actors pointer to the count of total actors
+ * @param actor_array pointer to the array to be written to
+ */
+void json_to_actor_array(const char *fname, int *total_actors, struct actor **actor_array) {
     cJSON *all_json = json_from_file(fname);
-    cJSON *actor_json;
+    cJSON *all_actors_json = NULL;
+    cJSON *shuffle_json = NULL;
+    cJSON *actor_json = NULL;
     struct actor *new_actor;
+    int appearance, color = 0;
+    int end;
+    int start = *total_actors;
 
     if (!all_json) {
-        panik("Could not read creatures: %s\n", fname);
+        panik("Could not read json file: %s\n", fname);
         return;
     }
+    all_actors_json = cJSON_GetObjectItemCaseSensitive(all_json, "actors");
+    shuffle_json = cJSON_GetObjectItemCaseSensitive(all_json, "shuffle");
 
     // read each one into the actor array. must be freed at a later point.
-    cJSON_ArrayForEach(actor_json, all_json) {
-        if (g.total_monsters >= MAX_MONSTERS) {
-            logm_warning("MAX_MONSTERS exceeded. Termination of game is recommended.");
+    cJSON_ArrayForEach(actor_json, all_actors_json) {
+        if (*total_actors >= MAX_ACTORS) {
+            logm_warning("MAX_ACTORS exceeded. Termination of game is recommended.");
             break;
         }
         new_actor = actor_from_json(actor_json);
-        new_actor->id = g.total_monsters;
-        g.monsters[g.total_monsters] = new_actor;
-        g.total_monsters++;
+        new_actor->id = *total_actors;
+        actor_array[*total_actors] = new_actor;
+        (*total_actors)++;
     }
+
+    /* Shuffle the subsection of the array that we read in (if needed) */
+    appearance = cJSON_GetObjectItemCaseSensitive(shuffle_json, "appearance")->valueint;
+    color = cJSON_GetObjectItemCaseSensitive(shuffle_json, "color")->valueint;
+    end = *total_actors;
+    if (appearance || color)
+        shuffle_attributes(actor_array, start, end, appearance, color);
+
     cJSON_Delete(actor_json);
     cJSON_Delete(all_json);
 }
 
-void json_to_item_list(const char *fname) {
-    cJSON *all_json = json_from_file(fname);
-    cJSON *actor_json;
-    struct actor *new_actor;
-
-    if (!all_json) {
-        panik("Could not read items: %s\n", fname);
-        return;
-    }
-
-    // read each one into the actor array. must be freed at a later point.
-    cJSON_ArrayForEach(actor_json, all_json) {
-        if (g.total_items >= MAX_ITEMS) {
-            logm_warning("MAX_ITEMS exceeded. Termination of game is recommended.");
-            break;
+/**
+ * @brief shuffle the attributes of an array of actors
+ * 
+ * @param actor_array the array of actors to act upon
+ * @param start (inclusive) where to start shuffling
+ * @param end (exclusive) where to stop shuffling
+ * @param appearance if != 0 then shuffle appearance
+ * @param color if != 0 then shuffle color
+ */
+void shuffle_attributes(struct actor **actor_array, int start, int end, int appearance, int color) {
+    int swap_index;
+    unsigned char temp_color;
+    char temp[MAXNAMESIZ];
+    for (int i = start; i < end; i++) {
+        swap_index = rndrng(i, end);
+        if (i != swap_index) {
+            /* Appearance */
+            if (appearance) {
+                strncpy(temp, actor_array[i]->name->appearance, sizeof(actor_array[i]->name->appearance));
+                strncpy(actor_array[i]->name->appearance, actor_array[swap_index]->name->appearance, sizeof(actor_array[swap_index]->name->appearance));
+                strncpy(actor_array[swap_index]->name->appearance, temp, sizeof(temp));
+            }
+            /* Color */
+            if (color) {
+                temp_color = actor_array[i]->color;
+                actor_array[i]->color = actor_array[swap_index]->color;
+                actor_array[swap_index]->color = temp_color;
+            }
         }
-        new_actor = actor_from_json(actor_json);
-        new_actor->id = g.total_items;
-        g.items[g.total_items] = new_actor;
-        g.total_items++;
     }
-    //cJSON_Delete(all_json);
-    cJSON_Delete(actor_json);
 }
 
 /**
@@ -388,6 +417,6 @@ struct wfc_image parse_wfc_json(char *infile) {
         .width = width,
         .height = height
     };
-    cJSON_Delete(test_json);
+    cJSON_Delete(wfc_json);
     return image;
 }

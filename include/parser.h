@@ -7,7 +7,7 @@
 /* Function Prototypes */
 struct wfc_image parse_wfc_json(char *infile);
 struct actor *actor_from_file(const char *);
-void json_to_monster_list(const char *);
+void json_to_actor_array(const char *, int *, struct actor **);
 void json_to_item_list(const char *);
 
 #endif
