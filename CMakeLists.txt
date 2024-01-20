@@ -81,6 +81,7 @@ set (HEADERS
     include/version.h
     include/wfc.h
     include/windows.h)
+set (EXTRA data LICENSE README.md)
 set (INCLUDE_DIR include)
 
 # Create executable
@@ -90,14 +91,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${CJSON_LIBRARIES} -lpanelw ${CURSE
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 # Copy data files
-# See https://stackoverflow.com/questions/13429656/how-to-copy-contents-of-a-directory-into-build-directory-after-make-with-cmake
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy_directory
-                       ${CMAKE_SOURCE_DIR}/data $<TARGET_FILE_DIR:${PROJECT_NAME}>/data
-                    COMMENT "Copying data folder to output dir.")
+file(COPY ${EXTRA} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-message(STATUS "Configuring CMake for ${PROJECT_NAME} v${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}-${RELEASE_STATE}")
-message(STATUS "Release Type: ${CMAKE_BUILD_TYPE}")
 ##########################Install##########################
 install(TARGETS ${PROJECT_NAME} DESTINATION .)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/data/ DESTINATION data)
